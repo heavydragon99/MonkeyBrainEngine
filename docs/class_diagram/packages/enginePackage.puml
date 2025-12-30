@@ -1,0 +1,171 @@
+@startuml enginePackageClassDiagram
+package Engine {
+    class EngineBravo {
+        + initialize() : void
+        + run() : void
+        + getSceneManager() : SceneManager&
+        + runBehaviourScripts() : void
+        + getAudioManager() : AudioManager&
+        + addToUpdateObjects(GameObject &aGameObject) : void
+        - updateAdditions() : void
+        - updateRemovals() : void
+        - mUpdateObjects : vector<reference_wrapper<GameObject>>
+        - mSaveGameManager : SaveGameManager 
+        - mSceneManager : SceneManager
+        - mTextureManager : TextureManager
+        - mUIManager : UIManager
+        - mRenderer : Renderer
+    }
+
+    class TextureManager {
+        - TextureManager()
+        + loadTextures() : void
+        + loadAudio() : void
+        + loadTileset(const string &aPath) : Texture*
+    }
+
+    class SceneManager {
+        + addScene(const Scene& scene) : int
+        + addSceneLevel(TileMap& map) : int
+        + loadScene(int index) : void
+        + loadScene(const std::string& sceneName) : void
+        + getCurrentScene() : Scene*
+        + createScene(std::string aSceneName, int aSceneID = -1) : Scene*
+        - SceneManager()
+        - sceneNameExists(string aSceneName) : bool
+        - sceneIDExists(int aSceneID) : bool
+        - getNewSceneID() : int
+        - mScenes : vector<unique_ptr<Scene>>
+        - mCurrentSceneIndex : int
+    }
+
+    class SaveGameManager {
+        - SaveGameManager()
+        + createSaveGame(const string &aId, const string &aPath) : SaveGame&
+        + getSaveGame(const string &aId) : SaveGame&
+        + deleteSaveGame(const string &aId, bool aDeleteFile) : void
+        - mSaveGames : unordered_map<string, SaveGame> 
+    }
+
+    class UIManager {
+        - mClickableButtons : vector<UIObject&>
+        - mObjects : vector<reference_wrapper<GameObject>>
+        + ClickableButtonPressed() : bool
+        + checkIsClickableButton() : bool
+        + addClickableButton((UIObject& aButton)) : void
+        + removeClickableButton(std::string ID) : void
+        + addObject(GameObject& aObject) : void
+        + removeObject(GameObject& aObject) : void
+        - UIManager()
+    }
+
+    class NetworkManager {
+        + void startServer()
+        + void startClient()
+        + void startHost()
+        + void shutdown()
+        - mIsServer : bool
+        - mIsClient : bool
+        - mIsHost : bool
+        - mConnectedClients : List<NetworkClient>
+        - mTickRate : int
+        - mDefaultPlayerPrefab : GameObject&
+        - mEnableSceneManagement : bool
+    }
+
+    class PhysicsManager {
+        + PhysicsManager()
+        + startPhysicsEngine() : void
+    }
+
+    class RenderSystem {
+        + RenderSystem()
+
+        + setAspectRatio(const Point& aAspectRatio) : void 
+        + getAspectRatio() const : Point 
+
+        + renderLayer(const Scene& aScene, int aLayer, const Camera& aCurrentCamera, const Rect& aScreenViewPort) const : void 
+        + render(const Scene& aScene) const : void 
+
+        + getRenderer() : Renderer& 
+        + getWindow() : Window& 
+
+        + getTextSize(const std::string& aFont, const std::string& aText, int& aWidth, int& aHeight,
+        const Vector2& aScale) const : bool 
+        + screenToWorldPos(const Point& aScreenpos, const Camera& aCurrentCamera) const : Vector2 
+
+        + addObject(GameObject& aObject) : void 
+        + removeObject(GameObject& aObject) : void 
+
+        + getObjects() const : const std::vector<std::reference_wrapper<GameObject>>& 
+        + clearObjects() : void 
+
+        - renderSprite(const Camera& aCurrentCamera, const GameObject& aGameObject, const Sprite& aSprite, const Rect& aScreenViewPort) const : void 
+        - renderAnimation(const Camera& aCurrentCamera, const GameObject& aGameObject, const Animation& aAnimation, const Rect& aScreenViewPort) const : void 
+        - renderParticle(const Camera& aCurrentCamera, const Particle& aParticle, const Rect& aScreenViewPort) const : void 
+        - renderText(const Camera& aCurrentCamera, const std::string& aText, const Vector2& aLocation, const Color& aColor, const Vector2& aScale, const Rect& aScreenViewPort) const : void 
+        - renderSquare(const Vector2& aPosition, const int aWidth, const int aHeight, const float aRotation, const Color& aColor, bool aFilled, const Camera& aCurrentCamera, const Rect& aScreenViewPort, const Point& aRotationalCenter = {0, 0}) const : void 
+        - renderCircle(const Vector2& aPosition, const float aRadius, const Color& aColor, const bool aFilled, const Camera& aCurrentCamera, const Rect& aScreenViewPort) const : void 
+
+        - renderForCamera(const Scene& aScene, const Camera& camera, const Rect& aScreenViewPort) const : void 
+
+        - renderDebugInfo(const Scene& aScene, const Camera& aCurrentCamera, const Rect& aScreenViewPort) const : void 
+
+        - sortCamerasByRenderOrder(std::vector<Camera*>& aCameras) const : void 
+
+        - updateLayerRange(GameObject& aObject) : void 
+
+        - mObjects : std::vector<std::reference_wrapper<GameObject>> 
+        - mRenderer : std::unique_ptr<Renderer> 
+        - mWindow : std::unique_ptr<Window> 
+
+        - mAspectRatio : Point 
+
+        - WindowWidth : int 
+        - WindowHeight : int 
+
+        - mLowestLayer : int 
+        - mHighestLayer : int 
+
+        - mBackgroundColor : Color 
+    }
+
+    class AudioManager {
+        + AudioManager()
+        + play(const AudioSource&) : void
+        + stop(const AudioSource&) : void
+        + wake() : void
+        + getFacade() : IAudioFacade&
+        + loadSound(const AudioSource&) : void
+        + clearSounds() : void
+    }
+
+    class ParticleSystem {
+        + ParticleSystem()
+        + update() : void
+        + addObject(GameObject& aObject) : void
+        + removeObject(GameObject& aObject) : void
+        - mObjects : vector<reference_wrapper<GameObject>>
+    }
+
+    class UpdateQueue {
+	    + addToUpdateObjects(GameObject& aGameObject) : void
+	    + clearUpdateObjects() : void
+	    + updateAdditions() : void
+	    + updateRemovals() : void
+	    + clearManagerObjects() : void
+        - mUpdateObjects : vector<reference_wrapper<GameObject>>
+    }
+
+    EngineBravo *-- "1" SceneManager
+    EngineBravo *-- "1" SaveGameManager
+    EngineBravo *-- "1" UIManager
+    EngineBravo *-- "1" TextureManager
+    EngineBravo *-- "0..1" NetworkManager 
+    EngineBravo *-- "1" PhysicsManager
+    EngineBravo *-- "1" RenderSystem
+    EngineBravo *-- "1" AudioManager
+    EngineBravo *-- "1" ParticleSystem
+    EngineBravo *-- "1" UpdateQueue
+}
+@enduml

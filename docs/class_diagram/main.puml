@@ -1,0 +1,46 @@
+@startuml engineBravoClassDiagram
+
+skinparam groupInheritance 2
+skinparam backgroundColor #AAAAAA
+
+!include packages/componentPackage.puml
+!include packages/enginePackage.puml
+!include packages/physicsPackage.puml
+!include packages/particleEmitterPackage.puml
+!include packages/savegamePackage.puml
+!include packages/misc.puml
+!include packages/globalPackage.puml
+!include packages/uiPackage.puml
+!include packages/audioPackage.puml
+!include packages/renderingPackage.puml
+!include packages/tileMapParserPackage.puml
+!include packages/aiPackage.puml
+
+NetworkManager *-down- Networking
+PhysicsManager *-down- Physics
+ParticleSystem *-down- ParticlePackage
+SaveGameManager *-down- Save
+SceneManager *-down- "*" Scene
+UIManager o-down- UI
+SceneManager -down-> TileMapParser
+AudioManager *-down- Audio
+TextureManager *-down- "0..*" Texture
+RenderSystem *-down- Rendering
+
+GameObject *-up- "0..*" AudioSourceProxy
+GameObject *-up- "0..*" ParticleEmitterProxy
+GameObject *-up- "0..*" CircleColider
+GameObject *-up- "0..*" BoxCollider
+GameObject *-up- "0..*" RigidBody
+GameObject *-up- "0..*" IBehavourScript
+GameObject *-up- "0..*" AnimationProxy
+GameObject *-up- "0..*" SpriteProxy
+GameObject *-up- "1" Transform
+GameObject "0..1" o-- "0..*" GameObject : parent >
+GameObject *-- "0..*" NetworkObjectProxy
+UIObjectProxy --|> GameObject
+
+Scene *-- "0..*" GameObject
+Camera "1..*" --*  Scene
+
+@enduml

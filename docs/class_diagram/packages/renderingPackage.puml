@@ -1,0 +1,187 @@
+@startuml renderingPackageClassDiagram
+
+package Rendering {
+
+
+class Window {
+    + Window(int aWindowWidth, int aWindowHeight)
+	+ ~Window()
+
+    + showWindow() : void 
+
+    + getSize() : Vector2 
+    + setSize(Vector2 aSize) : void 
+
+    + setFullScreen() : void 
+    + setFloating() : void 
+    + toggleFullFloating() : void 
+
+    + getSDLWindow() : SDL_Window* 
+
+    - mWindow : SDL_Window* 
+}
+
+
+class Renderer {
+	+ Renderer(Window& window)
+	+ ~Renderer()
+
+    + clear(const Color& aColor) const : void 
+    + show() const : void 
+    + setViewport(const Rect& viewport) const : void 
+
+	+ renderTexture(const Texture& aTexture, const Rect& aSourceRect, const Vector2& aLocation, const int aWidth,
+					   const int aHeight, const bool aFlipX, const bool aFlipY, const float aRotation,
+                       const Color& aColor, const Point& aRotationalCenter = {0, 0}) const : void 
+
+	+ renderSquare(const Vector2& aLocation, const int aWidth, const int aHeight, const float rotation,
+    const Color& aColor, const bool aFill, const Point& aRotationalCenter = {0, 0}) const : void 
+
+    + drawCircle(const Vector2& center, const int radius, const Color& aColor, const bool aFill) const : void 
+
+	+ renderText(const std::string& aText, const Vector2& aLocation, const Color& aColor, const float scaleX,
+    const float scaleY) const : void 
+
+    + calculateTextSize(const std::string& font, const std::string& text, int& width, int& height) const : bool 
+
+    + getSDLRenderer() : SDL_Renderer*& 
+
+    - mFont : TTF_Font* 
+
+    - mRenderer : SDL_Renderer* 
+}
+
+class Sprite implements Component{
+	+ Sprite(const Texture& aTexture, int aWidth, int aHeight, const Rect& aSourceRect = Rect(),
+		   const std::string& aTag = "defaultSprite")
+	+ ~Sprite()
+
+	
+	+ Sprite(const Sprite& other)
+	+ Sprite& operator=(const Sprite& other)
+	+ Sprite(Sprite&& other) 
+	+ Sprite& operator=(Sprite&& other) 
+
+    + clone() const override : std::unique_ptr<Component> 
+
+    + Texture& getTexture() const : const 
+
+    + getRelativePosition() const : Transform 
+    + setRelativePosition(const Transform& aNewTransform) : void 
+
+    + Rect& getSource() const : const 
+    + setSource(const Rect& aSourceRect) : void 
+
+    + getColorFilter() const : Color 
+    + setColorFilter(Color aColor) : void 
+
+    + setFlipX(bool state) : void  
+
+    + getFlipX() const : bool  
+
+    + setFlipY(bool state) : void  
+
+    + getFlipY() const : bool  
+
+    + setWidth(float aWidth) : void  
+
+    + getWidth() const : float  
+
+    + setHeight(float aHeight) : void  
+
+    + getHeight() const : float  
+
+    + setLayer(int aLayer) : void  
+
+    + getLayer() : int  
+
+	- Transform mTransform
+
+	- const Texture& mTexture
+	- Rect mSourceRect
+	- Color mColorFilter
+
+	- float mWidth = 0
+	- float mHeight = 0
+	- bool mFlipX
+	- bool mFlipY
+
+	- int mLayer = 0
+}
+
+class Component_Proxy {}
+
+class Animation implements Component_Proxy{
+	+ Animation(std::vector<std::reference_wrapper<Sprite>> aAnimationFrames, int aTimeBetweenFrames,
+			  bool aIsLooping = false, const std::string& aTag = "defaultAnimation")
+	+ ~Animation()
+
+	+ Animation(const Animation& other)
+	+ Animation& operator=(const Animation& other)
+	+ Animation(Animation&& other) noexcept
+	+ Animation& operator=(Animation&& other) noexcept
+
+    + clone() const override : std::unique_ptr<Component> 
+
+    + getTransform() const : Transform 
+    + setTransform(const Transform& aNewTransform) : void 
+
+    + Sprite& getFrame(int aFrameIndex) const : const 
+    + Sprite& getCurrentFrame() const : const 
+
+    + getColorFilter() const : Color 
+    + setColorFilter(const Color& aColor) : void 
+
+    + getTimeBetweenFrames() const : int 
+    + setTimeBetweenFrames(int aTimeBetweenFrames) : void 
+
+    + setFlipX(bool state) : void 
+    + getFlipX() const : bool 
+
+    + setFlipY(bool state) : void 
+    + getFlipY() const : bool 
+
+    + isLooping() const : bool 
+    + setIsLooping(bool aIsLooping) : void 
+
+    + getFrameCount() const : int 
+
+    + setLayer(int aLayer) : void 
+    + getLayer() const : int 
+
+	- Transform mTransform
+
+	- std::vector<std::unique_ptr<Sprite>> mAnimationFrames
+
+	- bool mFlipX
+	- bool mFlipY
+	- int mTimeBetweenFrames
+	- bool mIsLooping
+	- int mLayer
+}
+
+class Texture {
+	+ Texture(SDL_Texture* aTexture, int aID = 0)
+	+ ~Texture()
+
+    + getSDLTexture() const : SDL_Texture* 
+
+    + getID() const : int  
+
+    - mID : int 
+    - mTexture : SDL_Texture* 
+    - mTextureLoaded : bool 
+}
+
+
+Animation  *-- "2..*" Sprite
+Sprite *-up- "1" Texture
+
+}
+
+Rendering *-- "1" Renderer
+Rendering *-- "1" Window
+@enduml
+
+
+

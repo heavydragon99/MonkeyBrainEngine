@@ -1,0 +1,80 @@
+@startuml audioPackageClassDiagram
+
+package Audio{
+    class Component_Proxy {}
+
+class AudioSource implements Component_Proxy{
+    - mFileName : string
+    - mPlayOnAwake : bool
+    - mLoop : bool
+    - mIsMusic : bool
+    - mVolume : int
+    - mMaxVolume : const static int
+    - mXDirection : int
+    - minXDirection : const static int
+    - maxXDirection : const static int
+
+    + AudioSource(const string& aPath, bool aIsMusic, const string& aTag)
+    + play(bool aLooping) : void
+    + stop() : void 
+
+    + isMusic() : bool
+    + setPlayOnWake(bool aValue) : void
+    + getPlayOnWake() : bool
+    + setLooping(bool aLooping) : void
+    + getLooping() : bool
+    + setVolume(unsigned aVolume) : void
+    + getVolume() : unsigned
+    + setXDirection(int aListenerX, int aSourceX) : void
+    + setXDirection(int aXDirection) : void
+    + getXDirection() : int
+    + getFileName() : string
+}
+
+interface IAudioFacade {
+    + loadSound(const string &aPath) : virtual void
+    + loadMusic(const string &aPath) : virtual void
+    + unloadAll() : virtual void
+    + soundIsLoaded(const string &aPath) virtual bool
+    + musicIsLoaded() : virtual bool
+    
+    + playSound(const string &aPath, bool aLooping, unsigned aVolume, int aDirection) : virtual void
+    + playMusic(int aVolume) : virtual void
+	+ pauseMusic() : virtual void
+	+ resumeMusic() : virtual void
+	+ stopMusic() : virtual void
+    
+    + isPlaying(const string &aPath) : virtual bool
+    + aIsMusicPlaying() : virtual bool
+}
+
+class MixerFacade implements IAudioFacade {
+    - mChannelCount : const unsigned
+    - mLastUsedChannel : unsigned
+    - findAvailableChannel() : int
+    - distanceToAngle(int aDirection) : int
+}
+
+class MixerContainer {
+    - mSfx : unordered_map<string, Mix_Chunk*>
+    - mMusicPath : string
+    - mMusic : Mix_Music*
+    + MixerContainer()
+    + ~MixerContainer()
+    + addSound(const string& aPath, Mix_Chunk *aSound) : void
+    + getSound(const string& aIndex) : Mix_Chunk*
+    + getSound(const string& aIndex) : const Mix_Chunk*
+
+    + addMusic(const string& aPath, Mix_Music *aMusic) : void
+    + getMusic() : Mix_Music*
+    + getMusic() : const Mix_Music*
+    + clear() : void
+}
+
+MixerFacade *-- MixerContainer
+
+}
+
+Audio *--IAudioFacade
+
+@enduml
