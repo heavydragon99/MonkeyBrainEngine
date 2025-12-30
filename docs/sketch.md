@@ -3,22 +3,22 @@
 **Project:** Biological Time-Loop Automation Game  
 **Game Name:** Splorb
 
-*This document consolidates all design information provided so far and expands it into a full specification for implementation, testing, and iteration.*
+_This document consolidates all design information provided so far and expands it into a full specification for implementation, testing, and iteration._
 
 ---
 
 ## 1. High-level Concept
 
-A calm, slow-paced cooperative automation game set on an alien biological planet. The player is a biological entity that upgrades itself across repeated time-loop cycles.  A central symbiotic biological machine powers the world and enforces the loop; repairing it extends future cycle duration and unlocks access to more advanced biological resources.  Players can grow worker organisms (bots) which function mainly as carriers or machine copies.  The world is procedurally generated and resets each cycle.
+A calm, slow-paced automation game set on an alien biological planet. The player is a biological entity that upgrades itself across repeated time-loop cycles. A central symbiotic biological machine powers the world and enforces the loop; repairing it extends future cycle duration and unlocks access to more advanced biological resources. Players can grow worker organisms (bots) which function mainly as carriers or machine copies. The world is procedurally generated and resets each cycle.
 
 ---
 
 ## 2. Core Game Loop and Time-Loop Mechanics
 
-### Core Loop: 
+### Core Loop
 
 - Each **'run'** is a fixed-duration time loop during which the player acts in the world
-- The **central biological machine** supplies the player's active energy.  When energy runs out the player falls asleep and the run ends
+- The **central biological machine** supplies the player's active energy. When energy runs out the player falls asleep and the run ends
 - At the end of a run the world **resets** (full regeneration) and the player returns with persistent upgrades and unlocked recipes
 - Player can also apply **upgrades to the central machine** at end-of-run which affect future runs (duration, efficiency, available slots, input speed)
 - Major repairs to the machine unlock access to **higher-tier resources** in subsequent runs
@@ -27,18 +27,19 @@ A calm, slow-paced cooperative automation game set on an alien biological planet
 
 ## 3. World Machine (Central Machine) Specification
 
-**Concept:** A planet-scale biological device that provides bioelectric energy to the player.  It accepts resources via an access point (furnace-like interface) and consumes inputs to power the player for the duration of the run.
+**Concept:** A planet-scale biological device that provides bioelectric energy to the player. It accepts resources via an access point (furnace-like interface) and consumes inputs to power the player for the duration of the run.
 
-### Components:
+### Components
 
-Multiple subsystems/components that can be repaired/upgraded individually: 
+Multiple subsystems/components that can be repaired/upgraded individually:
+
 - Receptacle
 - Metabolizer
 - Regulator
 - Distributor
 - Storage
 
-### Upgrades at End-of-Run:
+### Upgrades at End-of-Run
 
 - **Cycle duration** (base active time)
 - **Efficiency** (fewer inputs per unit time required)
@@ -46,7 +47,7 @@ Multiple subsystems/components that can be repaired/upgraded individually:
 - **Intake speed** (how fast inputs are consumed/processed)
 - **Advanced resource unlocks** (major component repairs unlock new materials)
 
-### Behavior:
+### Behavior
 
 - During a run the machine's effectiveness will inevitably decline (forcing a loop) unless repaired/upgraded across runs
 - Repairing major components is required to access new resource tiers and to make the world blossom more
@@ -56,15 +57,15 @@ Multiple subsystems/components that can be repaired/upgraded individually:
 
 ## 4. Player Character Design
 
-Player is a single controllable biological entity with modular upgrades.  The player is 'alien' (non-human) and evolves across runs. 
+Player is a single controllable biological entity with modular upgrades. The player is 'alien' (non-human) and evolves across runs.
 
-### Persistent Elements Between Runs:
+### Persistent Elements Between Runs
 
 - Upgrade points
 - Unlocked recipes
 - Learned lore
 
-### Potential Upgrade Categories:
+### Potential Upgrade Categories
 
 - Gather speed
 - Crafting speed
@@ -74,7 +75,7 @@ Player is a single controllable biological entity with modular upgrades.  The pl
 - Sensor range
 - Stamina/energy efficiency
 
-### Upgrade System:
+### Upgrade System
 
 - Upgrades are arranged as a **progression tree** (big tree) that you can only invest in at end-of-run
 - **Player color in visuals:** Red
@@ -85,13 +86,13 @@ Player is a single controllable biological entity with modular upgrades.  The pl
 
 Workers and machines are biological copies/transformations of the player. They serve primarily as carriers and transporters, and as physical machines (e.g., harvesters, processors).
 
-### Visual Color Coding:
+### Visual Color Coding
 
 - **Player:** Red
 - **Machines:** Green
 - **Workers:** Purple
 
-### Worker Tiers:
+### Worker Tiers
 
 Workers will be produced at the cost of resources and have **6 tiers:**
 
@@ -102,18 +103,19 @@ Workers will be produced at the cost of resources and have **6 tiers:**
 5. Small teleporter
 6. Big teleporter
 
-### Worker Chain Mechanic:
+### Worker Chain Mechanic
 
-When multiple workers move resources between two points, they form a **chain** so not every worker traverses the full route: 
+When multiple workers move resources between two points, they form a **chain** so not every worker traverses the full route:
+
 - More workers reduce per-unit movement, increasing throughput
 - Must cap chain speed to avoid unbounded optimization
 
-### Machines:
+### Machines
 
 - Converted copies of the player (green) that behave as stationary processors or resource collectors
 - Worker and machine behavior persists only during a run (they reset with the world)
 
-### Important Worker Design Choices (Left to You):
+### Important Worker Design Choices (Left to You)
 
 - How workers are spawned or grown (resource cost, time, infrastructure)
 - Worker storage/stacking rules (how many can occupy a tile, carry capacities)
@@ -123,54 +125,62 @@ When multiple workers move resources between two points, they form a **chain** s
 
 ## 6. Bot Programming (Optional Advanced Feature)
 
-Although the immediate plan makes bots simple carriers, there is an optional advanced system where bots can be programmed using a **node-based interface**.  The player upgrade tree can increase the number of programmable nodes available for each bot. 
+Although the immediate plan makes bots simple carriers, there is an optional advanced system where bots can be programmed using a **node-based interface**. The player upgrade tree can increase the number of programmable nodes available for each bot.
 
-### List of Programmable Nodes / Actions:
+### List of Programmable Nodes / Actions
 
-#### Movement Nodes:
+#### Movement Nodes
+
 - `MoveTo(tile)`
 - `MoveAlongPath(path)`
 - `Wait(duration)`
 
-#### Resource Interaction Nodes:
+#### Resource Interaction Nodes
+
 - `Gather(resource_type, amount)`
 - `Drop(resource_type, amount, target)`
 - `Pickup(resource_type, amount)`
 - `TransferTo(entity, resource_type, amount)`
 
-#### Machine Interaction Nodes:
+#### Machine Interaction Nodes
+
 - `UseMachine(machine_id, action)`
 - `StartProcessing(recipe_id)`
 
-#### Conditional / Logic Nodes:
+#### Conditional / Logic Nodes
+
 - `If(predicate)` → branch
 - `Compare(valueA, valueB)`
 - `ResourceAvailable(resource_type, amount)`
 - `HasInventorySpace(amount)`
 - `While(predicate)` → loop
 
-#### Sensing Nodes:
+#### Sensing Nodes
+
 - `DetectResourceInRadius(type, radius)`
 - `DetectEntityType(type, radius)`
 - `GetNearest(target_type)`
 - `GetTileProperty(x, y)`
 
-#### Memory / State Nodes:
+#### Memory / State Nodes
+
 - `Store(value_name, value)`
 - `Read(value_name)`
 - `Increment(value_name, amount)`
 - `Reset(value_name)`
 
-#### Control / Flow Nodes:
+#### Control / Flow Nodes
+
 - **Sequence** (execute children in order)
 - **Parallel** (run children concurrently with limits)
 - `Delay(seconds)`
 
-#### Utility Nodes:
+#### Utility Nodes
+
 - `RandomChoice(list)`
 - `Return(success/failure)`
 
-### Design Notes:
+### Design Notes
 
 - This node system can be as lightweight or deep as you want — it is **optional** and can be gated behind player upgrades or lore discoveries
 - Aim for a minimal node set first (move, gather, drop, conditional) and expand later
@@ -180,7 +190,7 @@ Although the immediate plan makes bots simple carriers, there is an optional adv
 
 ## 7. Resources, Tiers, and Production
 
-### Resource System:
+### Resource System
 
 - Resources are **biological in nature** (no stone/metal/wood)
 - **Examples:** aqueous biomass (water analog), spore-matter, membrane fibers, sapid gel, bioelectric nodes
@@ -190,7 +200,7 @@ Although the immediate plan makes bots simple carriers, there is an optional adv
 - Using machines may require combo resources like water + processed biomass
 - Resource flow rates and machine efficiency are affected by player upgrades and machine upgrades
 
-### Production Chains & Machines:
+### Production Chains & Machines
 
 - Machines are biological processors that transform inputs into outputs on a timed schedule (the simulation engine processes them on ticks)
 - Machines may have internal queues and input/output slots (the central machine itself has such slots)
@@ -203,7 +213,7 @@ Although the immediate plan makes bots simple carriers, there is an optional adv
 
 An **infinite procedurally generated map** that resets every loop. The world should be generated with chunking for memory efficiency and streaming (similar to Minecraft's approach).
 
-### Design: 
+### Design
 
 - World is conceptually infinite; generate by **deterministic seed** so runs can be reproducible if needed
 - **Chunking:** divide the world into manageable chunks, load/unload chunks as the player moves
@@ -211,12 +221,12 @@ An **infinite procedurally generated map** that resets every loop. The world sho
 - Consider storing world metadata in the DB for debugging or replay, but entire terrain need not be stored persistently
 - **Chunk save format:** choose a compact representation (binary tiles, RLE, or chunk-level compressed blobs)
 
-### Implementation Hints:
+### Implementation Hints
 
 - Use procedural noise (Perlin/Simplex) for biome distribution and resource clusters
 - Store per-chunk random seeds to allow deterministic regeneration without storing full data
 - Decide chunk size to balance memory and IO (e.g., 16×16 or 32×32)
-- Decide what is generated per-chunk:  base terrain, resource nodes, small flora, special landmarks, machine artifacts
+- Decide what is generated per-chunk: base terrain, resource nodes, small flora, special landmarks, machine artifacts
 
 ---
 
@@ -224,12 +234,12 @@ An **infinite procedurally generated map** that resets every loop. The world sho
 
 You initially considered ASCII but later preferred **pixel art**. Keep UI simple to preserve calm atmosphere.
 
-### Primary Display:
+### Primary Display
 
 - 2D top-down tile map (pixel art preferred)
 - **Color coding:** player (red), machines (green), workers (purple)
 
-### UI Overlays:
+### UI Overlays
 
 - Time-loop meter
 - Current available energy
@@ -237,12 +247,12 @@ You initially considered ASCII but later preferred **pixel art**. Keep UI simple
 - Selected bot/machine UI
 - Upgrade tree access at inter-run screens
 
-### Visual Effects:
+### Visual Effects
 
 - **Edge-of-screen 'fatigue' effect:** use vignetting or darkened edges to show low energy before blackout/sleep
 - Minimal HUD to keep the scene immersive and calm
 
-### Secondary Visualization:
+### Secondary Visualization
 
 - Optional debug terminal view for developers (show simulation tick info, entity counts, chunk loads)
 
@@ -252,23 +262,26 @@ You initially considered ASCII but later preferred **pixel art**. Keep UI simple
 
 Separation of concerns is critical to allow **single-player now** and **multiplayer later**. The architecture should support an authoritative simulation engine that can run locally in single-player or on a server for multiplayer.
 
-### Core Components:
+### Core Components
 
-#### Simulation Engine (C++):
+#### Simulation Engine (C++)
+
 - Authoritative tick loop
 - Processes machine recipes, worker movement, growth, resource regen
 
-#### Game Server (C++):
+#### Game Server (C++)
+
 - Exposes action endpoints (move, build, craft, spawn worker)
 - Validates actions
 - Writes to DB
 - Dispatches updates to clients
 
-#### Database: 
+#### Database
+
 - Stores persistent data (player profiles, upgrade tree progress, unlocked recipes, central machine upgrades)
 - Optional logs/replays
 
-### Requirements:
+### Requirements
 
 - **Single-repo requirement:** make the server and client buildable from the same repository with CMake
 - **Tick model:** deterministic update per tick (e.g., every N ms). Consider fixed timestep and physics-simulation-friendly logic
@@ -276,35 +289,17 @@ Separation of concerns is critical to allow **single-player now** and **multipla
 
 ---
 
-## 11. Networking & Multiplayer Considerations
-
-Design multiplayer readiness without locking single-player design. 
-
-### Design Principles:
-
-- All player actions should funnel through an **authoritative interface** (function calls locally and RPCs remotely)
-- Design actions as messages with validation rules and idempotency where appropriate
-- Real-time updates can use **WebSockets** or a custom TCP protocol.  For initial single-player prototype, local calls are fine
-- Consider eventual chunk ownership or instancing to limit network scope
-
-### Server Authority: 
-
-- **Locking, authoritative resolution and anti-cheat:** server decides results of actions and writes to DB
-- Client-side prediction may be added later for lower-latency feel
-
----
-
 ## 12. Database & Persistence Model
 
-**Minimal persistent data:** player accounts, upgrades, unlocked recipes, machine upgrade state, settings.  The world terrain and per-run entities do not need to be persisted long-term unless for debugging/replay.
+**Minimal persistent data:** player accounts, upgrades, unlocked recipes, machine upgrade state, settings. The world terrain and per-run entities do not need to be persisted long-term unless for debugging/replay.
 
-### DB Choices:
+### DB Choices
 
 - **SQLite** for single-file simplicity (developer-friendly)
 - **PostgreSQL** for production server
 - Keep DB access abstracted behind a data layer
 
-### Schema Ideas (High Level):
+### Schema Ideas (High Level)
 
 ```sql
 -- Players table
@@ -344,7 +339,7 @@ runs(
 logs(...)
 ```
 
-### Data Format:
+### Data Format
 
 - Prefer **JSON blobs** for flexible upgrade trees and unlock sets early, then normalize if needed
 
@@ -354,11 +349,11 @@ logs(...)
 
 A **single Git repo** that anyone can clone and run. Keep dependencies minimal and optional.
 
-### Build System:
+### Build System
 
 - Use **CMake** for cross-platform builds (Windows, macOS, Linux)
 
-### Repository Structure:
+### Repository Structure
 
 ```
 /engine
@@ -369,9 +364,9 @@ A **single Git repo** that anyone can clone and run. Keep dependencies minimal a
 /assets
 ```
 
-### Dependency Strategy:
+### Dependency Strategy
 
-Keep third-party libraries optional.  For example: 
+Keep third-party libraries optional. For example:
 
 - **SDL2 or SFML** for optional graphics front-end (make it optional via CMake flags)
 - **spdlog** for logging (optional)
@@ -379,7 +374,7 @@ Keep third-party libraries optional.  For example:
 - **nlohmann/json** for JSON serialization
 - A small procedural noise library or include your own Perlin/Simplex
 
-### Scripts:
+### Scripts
 
 - Provide bootstrap scripts for Linux/macOS and a PowerShell script for Windows to install deps and run CMake
 - Include a **README** with quickstart, build instructions, and game controls
@@ -388,21 +383,21 @@ Keep third-party libraries optional.  For example:
 
 ## 14. Art & Assets
 
-You shifted toward **pixel art**. Consider the art pipeline and simple tools. 
+You shifted toward **pixel art**. Consider the art pipeline and simple tools.
 
-### Sprite Design:
+### Sprite Design
 
 - Keep sprite sizes small (e.g., **16×16** or **32×32**) to maintain a calm aesthetic and make content creation manageable
 - Color-coded sprites for player/machines/bots
 - Keep animations minimal to preserve calmness (gentle pulses, slow movement)
 
-### Tools:
+### Tools
 
 - **Aseprite** (paid)
 - **Piskel** (free)
 - Simple PNG editors
 
-### Asset Organization:
+### Asset Organization
 
 - Store assets in a well-organized `/assets` folder with license notes if using third-party art
 
@@ -425,17 +420,17 @@ Suggested screens and flows (you decide exact UI):
 
 For development and balancing, implement optional telemetry and automated tests.
 
-### Testing: 
+### Testing
 
 - **Unit tests** for simulation determinism (tick-based unit tests)
 - **Integration tests** for client-server action flows (local mode)
 
-### Telemetry:
+### Telemetry
 
 - **Playtest telemetry:** run length, actions per minute, worker counts, machine usage
 - Keep off by default for privacy
 
-### Profiling:
+### Profiling
 
 - Profiling hooks to inspect hot loops in simulation (resource updates, pathfinding)
 
@@ -446,41 +441,49 @@ For development and balancing, implement optional telemetry and automated tests.
 A suggested incremental roadmap — you decide order and exact features.
 
 ### M1 - Boilerplate
+
 - CMake build
 - Minimal engine scaffolding
 - Basic tile rendering (pixel/placeholder)
 - DB integration (SQLite)
 
 ### M2 - World Gen
+
 - Chunk-based procedural generation
 - Player movement
 - Resource nodes and local gathering
 
 ### M3 - Central Machine
+
 - Implement access point to feed resources
 - Basic cycle timer and end-of-run handling
 - Upgrade screen
 
 ### M4 - Workers
+
 - Implement worker production
 - Chain transport mechanic
 - Worker tiers with cap on chain speed
 
 ### M5 - Production & Machines
+
 - Simple machines, recipes, and queues
 - Bioelectric pylons basic implementation
 
 ### M6 - QoL
+
 - Upgrade tree UI
 - Lore fragments
 - Improved art, audio, and polish
 
 ### M7 - Multiplayer Readiness
+
 - Server mode
 - Authoritative simulation
 - Basic networking for one remote client
 
 ### M8 - Stretch
+
 - Node-programmable bots
 - Complex machine systems
 - Hostile organisms
@@ -503,7 +506,7 @@ Things to think about as you design and implement:
 
 ## 19. Example Data Models and API Sketches (Appendix)
 
-### Sample High-Level DB Tables (Conceptual):
+### Sample High-Level DB Tables (Conceptual)
 
 ```
 players:  id, name, upgrades_json, recipes_json, created_at
@@ -512,18 +515,21 @@ lore_fragments:  id, title, text, found_flag
 runs: id, player_id, seed, duration_seconds, timestamp, stats_json
 ```
 
-### Sample Server Actions/Messages (Conceptual):
+### Sample Server Actions/Messages (Conceptual)
 
-#### Actions:
+#### Actions
+
 - `MoveUnit(unit_id, target_tile)`
 - `SpawnWorker(worker_type, target_tile)`
 - `FeedMachine(resource_type, amount)`
 - `BuildMachine(machine_type, tile)`
 
-#### Queries:
+#### Queries
+
 - `GetChunk(chunk_x, chunk_y)`
 
-#### Events:
+#### Events
+
 - `TickUpdate(world_patch_json)`
 - `EndOfRunSummary(summary_json)`
 
@@ -531,17 +537,17 @@ runs: id, player_id, seed, duration_seconds, timestamp, stats_json
 
 ## 20. Lore & Narrative Seeds (Appendix)
 
-### Short Lore Fragments:
+### Short Lore Fragments
 
-> *"We were grafted to the root when memory was young."*
+> _"We were grafted to the root when memory was young."_
 
-> *"The machine sings in pulses; its hunger scours the dusk."*
+> _"The machine sings in pulses; its hunger scours the dusk."_
 
-> *"It remembers the first architects, but forgets their language."*
+> _"It remembers the first architects, but forgets their language."_
 
-> *"Each repair stitches a new bloom into the planet's skin."*
+> _"Each repair stitches a new bloom into the planet's skin."_
 
-### Narrative Beats to Consider:
+### Narrative Beats to Consider
 
 - **Loop 0:** Awakening—player learns movement and basic gathering; finds first lore shard
 - **Loops 1-3:** Early repairs and discovering the machine's input access point; unlock worker spawning
@@ -561,5 +567,6 @@ runs: id, player_id, seed, duration_seconds, timestamp, stats_json
 
 ---
 
-*Document compiled:  2025-12-30*  
-*Status: Living document—update as design evolves*
+_Document compiled: 2025-12-30_  
+_Status: Living document—update as design evolves_
+
