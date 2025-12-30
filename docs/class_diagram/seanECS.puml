@@ -1,0 +1,96 @@
+
+@startuml
+'========================
+' Chunked Archetype ECS - Example
+'========================
+
+class Component {
+}
+
+class Velocity {
+    +x: int
+    +y: int
+    +z: int
+}
+
+class Position {
+    +x: int
+    +y: int
+    +z: int
+}
+
+class Health {
+    +hp: int
+}
+
+class Entity {
+    +id: int
+}
+
+class Archetype {
+    +maxEntities: int
+    +id: int
+    +componentMask: uint32
+    +chunks: std::list<chunk>
+}
+
+class VelPosArchetype {
+    +maxEntities: int
+    +id: int
+    +componentMask: uint16
+}
+
+class VelHealthArchetype {
+    +maxEntities: int
+    +id: int
+    +componentMask: uint16
+}
+
+class ArchetypeX {
+    +maxEntities: int
+    +id: int
+    +componentMask: uint16
+}
+
+class Chunk {
+    +archetypeType: Archetype*
+    +entityCount: int
+    +entities: std::array<Entity>
+}
+
+class VelPosChunk {
+    +archetypeType: VelPosArchetype*
+    +entityCount: int
+    +entities: std::array<Entity>
+    +velocities: array<Velocity>
+    +positions: array<Position>
+    +versionVelocities: uint32_t
+    +versionPositions: uint32_t
+}
+
+class ChunkX {
+    +archetypeType: ArchetypeX*
+    +entityCount: int
+    +entities: std::array<Entity>
+    +componentsX: std::array<ComponentX>
+    +versionComponentX: uint32_t
+}
+
+
+'========================
+' Relationships
+'========================
+Component <|.. Velocity
+Component <|.. Position
+Component <|.. Health
+
+Archetype <|-- VelPosArchetype
+Archetype <|-- VelHealthArchetype
+Archetype <|-- ArchetypeX
+
+Chunk <|-- VelPosChunk
+Chunk <|-- ChunkX
+
+VelPosChunk --> VelPosArchetype
+
+@enduml
