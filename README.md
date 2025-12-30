@@ -18,3 +18,12 @@ git push
 git add .
 git rebase --continue
 ```
+
+
+# TODO
+## Siem
+* Mess aroung with dynamic archetype/chunking class generation
+
+## Sean
+* search which components our engine should have
+* Find out how to correctly use git
