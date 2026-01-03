@@ -16,8 +16,6 @@ struct Transform {
 };
 ```
 
----
-
 ### 2. **Mesh Renderer Component**
 Handles the rendering of 3D models or meshes associated with an entity.
 #### Variables:
@@ -27,8 +25,6 @@ struct MeshRenderer {
     std::string materialFilePath; // File path to the material/shader
 };
 ```
-
----
 
 ### 3. **Camera Component**
 Defines the entity as a camera.
@@ -41,8 +37,6 @@ struct Camera {
     float farClipPlane;
 };
 ```
-
----
 
 ### 4. **Light Component**
 Defines lighting properties for an entity.
@@ -58,8 +52,6 @@ struct Light {
 };
 ```
 
----
-
 ### 5. **Physics/RigidBody Component**
 Allows physical simulations for the entity.
 #### Variables:
@@ -72,8 +64,6 @@ struct RigidBody {
 };
 ```
 
----
-
 ### 6. **Collider Component**
 Defines the collision geometry for an entity.
 #### Variables:
@@ -84,8 +74,6 @@ struct Collider {
     float size[3]; // Dimensions (width, height, depth)
 };
 ```
-
----
 
 ### 7. **Audio Source Component**
 Provides audio playback capabilities to an entity.
@@ -98,8 +86,6 @@ struct AudioSource {
 };
 ```
 
----
-
 ### 8. **Input Component**
 Handles player input for the entity.
 #### Variables:
@@ -109,8 +95,6 @@ struct Input {
 };
 ```
 
----
-
 ### 9. **Script Component**
 Allows attaching user scripts to an entity.
 #### Variables:
@@ -119,8 +103,6 @@ struct Script {
     std::string scriptFilePath; // Path to the script file
 };
 ```
-
----
 
 ### 10. **Particle System Component**
 Handles particle systems for effects like fire, smoke, etc.
@@ -136,8 +118,6 @@ struct ParticleSystem {
 };
 ```
 
----
-
 ### 11. **Animation Component**
 Handles animation playback for models.
 #### Variables:
@@ -149,8 +129,6 @@ struct Animation {
 };
 ```
 
----
-
 ### 12. **AI/Behavior Component**
 Defines AI behavior for an entity.
 #### Variables:
@@ -160,13 +138,6 @@ struct AIBehavior {
     float decisionDelay;
 };
 ```
-
----
-
-## Additional Notes
-- Each component will align with the chunked archetype ECS model to ensure cache-friendly memory layout and efficient multithreading.
-- Systems will need to be developed for updating each component, such as a rendering system for `MeshRenderer` and `Camera`, or a physics system for `RigidBody` and `Collider`.
-- ECS architecture will enable separation of data (components) from logic (systems), maximizing performance and scalability.
 
 ---
 
