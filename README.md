@@ -6,17 +6,30 @@ MONKEHHHHHHH
 
 # rebase
 How to rebase a feature branch onto the main branch
+## 1 Rebase feature branch
 ```bash
 git checkout your-branch
 git fetch origin
 git rebase origin/main
-git push
 ```
 
-## fix conflicts in files
+## 2 Fix conflicts in files (if any)
 ```bash
 git add .
 git rebase --continue
+```
+
+## 3 Push the rebased branch
+```bash
+git push --force-with-lease
+```
+
+## 4 Merge back to main
+```bash
+git checkout main
+git pull origin main
+git merge your-branch
+git push origin main
 ```
 
 
