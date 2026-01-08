@@ -1,96 +1,88 @@
 
 @startuml
-'========================
-' Chunked Archetype ECS - Example
-'========================
+package "Components" {
+    class Component {
+    }
 
-class Component {
+    class Velocity implements Component {
+        +x: int
+        +y: int
+        +z: int
+    }
+
+    class Position implements Component {
+        +x: int
+        +y: int
+        +z: int
+    }
+
 }
 
-class Velocity {
-    +x: int
-    +y: int
-    +z: int
+package "Entities" {
+    class Entity {
+        +id: int
+    }
 }
 
-class Position {
-    +x: int
-    +y: int
-    +z: int
+package "Chunks" {
+    class Chunk {
+        +archetypeType: Archetype*
+        +entityCount: int
+        +entities: std::array<Entity>
+    }
+
+    class VelPosChunk implements Chunk {
+        +archetypeType: VelPosArchetype*
+        +entityCount: int
+        +entities: std::array<Entity>
+        +velocities: array<Velocity>
+        +positions: array<Position>
+        +versionVelocities: uint32_t
+        +versionPositions: uint32_t
+    }
+
+    class ChunkX implements Chunk {
+        +archetypeType: ArchetypeX*
+        +entityCount: int
+        +entities: std::array<Entity>
+        +componentsX: std::array<ComponentX>
+        +versionComponentX: uint32_t
+    }
 }
 
-class Health {
-    +hp: int
+package "Archetypes" {
+    class Archetype {
+        +maxEntities: int
+        +id: int
+        +componentMask: uint32
+        +chunks: std::list<chunk>
+    }
+
+    class VelPosArchetype implements Archetype {
+        +maxEntities: int
+        +id: int
+        +componentMask: uint16
+    }
+
+    class VelHealthArchetype implements Archetype {
+        +maxEntities: int
+        +id: int
+        +componentMask: uint16
+    }
+
+    class ArchetypeX implements Archetype {
+        +maxEntities: int
+        +id: int
+        +componentMask: uint16
+    }
 }
 
-class Entity {
-    +id: int
+package "Systems" {
+    class System {
+        +update()
+    }
 }
 
-class Archetype {
-    +maxEntities: int
-    +id: int
-    +componentMask: uint32
-    +chunks: std::list<chunk>
-}
-
-class VelPosArchetype {
-    +maxEntities: int
-    +id: int
-    +componentMask: uint16
-}
-
-class VelHealthArchetype {
-    +maxEntities: int
-    +id: int
-    +componentMask: uint16
-}
-
-class ArchetypeX {
-    +maxEntities: int
-    +id: int
-    +componentMask: uint16
-}
-
-class Chunk {
-    +archetypeType: Archetype*
-    +entityCount: int
-    +entities: std::array<Entity>
-}
-
-class VelPosChunk {
-    +archetypeType: VelPosArchetype*
-    +entityCount: int
-    +entities: std::array<Entity>
-    +velocities: array<Velocity>
-    +positions: array<Position>
-    +versionVelocities: uint32_t
-    +versionPositions: uint32_t
-}
-
-class ChunkX {
-    +archetypeType: ArchetypeX*
-    +entityCount: int
-    +entities: std::array<Entity>
-    +componentsX: std::array<ComponentX>
-    +versionComponentX: uint32_t
-}
-
-
-'========================
-' Relationships
-'========================
-Component <|.. Velocity
-Component <|.. Position
-Component <|.. Health
-
-Archetype <|-- VelPosArchetype
-Archetype <|-- VelHealthArchetype
-Archetype <|-- ArchetypeX
-
-Chunk <|-- VelPosChunk
-Chunk <|-- ChunkX
-
-VelPosChunk --> VelPosArchetype
-
+    VelPosChunk --> VelPosArchetype
+    
 @enduml
