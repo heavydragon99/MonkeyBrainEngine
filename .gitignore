@@ -42,3 +42,6 @@
 
 # Poc build files
 src/poc/build
+
+#build folder
+build/
