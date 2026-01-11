@@ -1,0 +1,25 @@
+@startuml
+(*) --> "Init"
+"Init" --> "Gameloop"
+
+partition "gameloop" {
+    "Input system" --> "Behaviour system"
+    if "Physics requires update"
+    --> [true] "Physics system"
+            if "Physics behind render" then
+        --> [true] "Physics system"
+        else
+        --> [false] "Render system"
+        endif
+    else
+    --> [false] "Render system"
+    endif
+    "Render system" --> "Input system"
+
+}
+@enduml
+
+' Systems to add:
+' Scene system
+' Entity system (adding / deleting entities)
+'
