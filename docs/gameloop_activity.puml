@@ -1,4 +1,4 @@
-@startuml
+@startuml gameloop_activity
 (*) --> "Init"
 "Init" --> "Gameloop"
 

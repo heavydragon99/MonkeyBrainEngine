@@ -10,7 +10,7 @@ How to rebase a feature branch onto the main branch
 ```bash
 git checkout your-branch
 git fetch origin
-git rebase origin/main
+git rebase -i origin/main
 ```
 
 ## 2 Fix conflicts in files (if any)
