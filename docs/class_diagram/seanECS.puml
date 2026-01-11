@@ -98,14 +98,10 @@ class Renderable implements Component {
     +visualID : int
     +color : Color
     +layer : int
+    +isVisible: bool
 }
 ' Abstract render data.
 ' Sprite, glyph, or tile ID.
-
-class Visibility implements Component {
-    +visible : bool
-}
-' Used for fog-of-war, sleep state, etc.
 
 class Animation implements Component {
     +frame : int
