@@ -19,6 +19,7 @@ project(
 # Link each target with other targets or add options, etc.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 include_directories(include)
 
 #target_sources()
@@ -34,3 +35,14 @@ include_directories(engine)
 # Adding something we can run - Output name matches target name
 add_executable(chunked_poc game/main.cpp)
 >>>>>>> 93a0220 (Added poc docs and poc)
+=======
+include_directories(include)
+
+#target_sources()
+
+# Adding something we can run - Output name matches target name
+add_executable(chunked_ecs_poc
+  main.cpp
+  src/Archetype.cpp
+  src/ECS.cpp)
+>>>>>>> b64bd00 (Updated chunked ECS poc)
