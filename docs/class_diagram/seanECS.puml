@@ -1,96 +1,227 @@
-
 @startuml
-'========================
-' Chunked Archetype ECS - Example
-'========================
+package "Components" {
+    class Component {
+    }
 
-class Component {
+' ======================
+' TIME & LIFECYCLE
+' ======================
+
+'class Time implements Component {
+'    +fixedDelta : float
+'    +tickCount : uint64
+'}
+' Fixed timestep for deterministic simulation.
+
+class Active implements Component {
+    +enabled : bool
+}
+' Allows entities to be temporarily disabled
+' without deleting them.
+
+class Lifetime implements Component {
+    +remainingTime : float
+}
+' Optional automatic destruction of entities
+' after a duration (effects, temp objects).
+
+' ======================
+' TRANSFORM & SPATIAL
+' ======================
+
+class Transform implements Component {
+    +position : Vec2
+    +rotation : float
+    +scale : Vec2
+}
+' World-space location and orientation.
+' Core spatial component.
+
+class GridPosition implements Component {
+    +tileX : int
+    +tileY : int
+}
+' Logical grid / chunk location.
+' Keeps tile logic out of Transform.
+
+' ======================
+' MOVEMENT
+' ======================
+
+class Velocity implements Component {
+    +value : Vec2
+}
+' Actual movement per tick.
+
+class MovementIntent implements Component {
+    +direction : Vec2
+    +speed : float
+}
+' Desired movement (input / AI).
+' Systems convert intent into velocity.
+
+' ======================
+' COLLISION
+' ======================
+
+class Collider implements Component {
+    +layer : int
+    +mask : int
+}
+' Simple collision bounds.
+' No full physics simulation required.
+
+class BoxCollider implements Collider {
+    +width : float
+    +height : float
 }
 
-class Velocity {
-    +x: int
-    +y: int
-    +z: int
+class CircleCollider implements Collider {
+    +radius : float
 }
 
-class Position {
-    +x: int
-    +y: int
-    +z: int
+class Solid implements Component {
+}
+' Marker component.
+' Blocks movement.
+
+class Trigger implements Component {
+}
+' Marker component.
+' Detects overlaps without blocking.
+
+' ======================
+' RENDERING ABSTRACTION
+' ======================
+
+class Renderable implements Component {
+    +visualID : int
+    +color : Color
+    +layer : int
+    +isVisible: bool
+}
+' Abstract render data.
+' Sprite, glyph, or tile ID.
+
+class Animation implements Component {
+    +frame : int
+    +frameTime : float
+    +loop : bool
+}
+' Optional animation support.
+
+' ======================
+' INPUT & CONTROL
+' ======================
+
+'class InputReceiver implements Component {
+'    +priority : int
+'}
+' Allows entity to receive input commands.
+
+'class Controllable implements Component {
+''}
+' Marker that maps input to actions.
+' Keeps input logic out of engine core.
+
+' ======================
+' SERIALIZATION / RESET
+' ======================
+
+'class Serializable implements Component {
+'    +version : int
+'}
+' Marks components that can be saved/loaded.
+
+class Persistent implements Component {
+}
+' Marker component.
+' Entity survives world reset / time loop.
+
+' ======================
+' DEBUG & TOOLING
+' ======================
+
+class Name implements Component {
+    +debugName : string
+}
+' Human-readable name for debugging.
+
+class DebugDraw implements Component {
+}
+' Visual debugging (colliders, paths, etc).
+
+  class IBehaviorScript implements Component {
+    + virtual setup()
+    + virtual run()
+  }
 }
 
-class Health {
-    +hp: int
+package "Entities" {
+    class Entity {
+        +id: int
+    }
 }
 
-class Entity {
-    +id: int
+package "Chunks" {
+    class Chunk {
+        +archetypeType: Archetype*
+        +entityCount: int
+        +entities: std::array<Entity>
+    }
+
+    class VelPosChunk implements Chunk {
+        +archetypeType: VelPosArchetype*
+        +entityCount: int
+        +entities: std::array<Entity>
+        +velocities: array<Velocity>
+        +positions: array<Position>
+        +versionVelocities: uint32_t
+        +versionPositions: uint32_t
+    }
+
+    class ChunkX implements Chunk {
+        +archetypeType: ArchetypeX*
+        +entityCount: int
+        +entities: std::array<Entity>
+        +componentsX: std::array<ComponentX>
+        +versionComponentX: uint32_t
+    }
 }
 
-class Archetype {
-    +maxEntities: int
-    +id: int
-    +componentMask: uint32
-    +chunks: std::list<chunk>
+package "Archetypes" {
+    class Archetype {
+        +maxEntities: int
+        +id: int
+        +componentMask: uint32
+        +chunks: std::list<chunk>
+    }
+
+    class VelPosArchetype implements Archetype {
+        +maxEntities: int
+        +id: int
+        +componentMask: uint16
+    }
+
+    class VelHealthArchetype implements Archetype {
+        +maxEntities: int
+        +id: int
+        +componentMask: uint16
+    }
+
+    class ArchetypeX implements Archetype {
+        +maxEntities: int
+        +id: int
+        +componentMask: uint16
+    }
 }
 
-class VelPosArchetype {
-    +maxEntities: int
-    +id: int
-    +componentMask: uint16
+package "Systems" {
+    class System {
+        +update()
+    }
 }
 
-class VelHealthArchetype {
-    +maxEntities: int
-    +id: int
-    +componentMask: uint16
-}
-
-class ArchetypeX {
-    +maxEntities: int
-    +id: int
-    +componentMask: uint16
-}
-
-class Chunk {
-    +archetypeType: Archetype*
-    +entityCount: int
-    +entities: std::array<Entity>
-}
-
-class VelPosChunk {
-    +archetypeType: VelPosArchetype*
-    +entityCount: int
-    +entities: std::array<Entity>
-    +velocities: array<Velocity>
-    +positions: array<Position>
-    +versionVelocities: uint32_t
-    +versionPositions: uint32_t
-}
-
-class ChunkX {
-    +archetypeType: ArchetypeX*
-    +entityCount: int
-    +entities: std::array<Entity>
-    +componentsX: std::array<ComponentX>
-    +versionComponentX: uint32_t
-}
-
-
-'========================
-' Relationships
-'========================
-Component <|.. Velocity
-Component <|.. Position
-Component <|.. Health
-
-Archetype <|-- VelPosArchetype
-Archetype <|-- VelHealthArchetype
-Archetype <|-- ArchetypeX
-
-Chunk <|-- VelPosChunk
-Chunk <|-- ChunkX
-
-VelPosChunk --> VelPosArchetype
-
+    VelPosChunk --> VelPosArchetype
+    
 @enduml
