@@ -1,23 +1,161 @@
-
 @startuml
 package "Components" {
     class Component {
     }
 
-    class Velocity implements Component {
-        +x: int
-        +y: int
-        +z: int
-    }
+' ======================
+' TIME & LIFECYCLE
+' ======================
 
-    class Position implements Component {
-        +x: int
-        +y: int
-        +z: int
-    }
+'class Time implements Component {
+'    +fixedDelta : float
+'    +tickCount : uint64
+'}
+' Fixed timestep for deterministic simulation.
 
+class Active implements Component {
+    +enabled : bool
+}
+' Allows entities to be temporarily disabled
+' without deleting them.
+
+class Lifetime implements Component {
+    +remainingTime : float
+}
+' Optional automatic destruction of entities
+' after a duration (effects, temp objects).
+
+' ======================
+' TRANSFORM & SPATIAL
+' ======================
+
+class Transform implements Component {
+    +position : Vec2
+    +rotation : float
+    +scale : Vec2
+}
+' World-space location and orientation.
+' Core spatial component.
+
+class GridPosition implements Component {
+    +tileX : int
+    +tileY : int
+}
+' Logical grid / chunk location.
+' Keeps tile logic out of Transform.
+
+' ======================
+' MOVEMENT
+' ======================
+
+class Velocity implements Component {
+    +value : Vec2
+}
+' Actual movement per tick.
+
+class MovementIntent implements Component {
+    +direction : Vec2
+    +speed : float
+}
+' Desired movement (input / AI).
+' Systems convert intent into velocity.
+
+' ======================
+' COLLISION
+' ======================
+
+class Collider implements Component {
+    +layer : int
+    +mask : int
+}
+' Simple collision bounds.
+' No full physics simulation required.
+
+class BoxCollider implements Collider {
+    +width : float
+    +height : float
 }
 
+class CircleCollider implements Collider {
+    +radius : float
+}
+
+class Solid implements Component {
+}
+' Marker component.
+' Blocks movement.
+
+class Trigger implements Component {
+}
+' Marker component.
+' Detects overlaps without blocking.
+
+' ======================
+' RENDERING ABSTRACTION
+' ======================
+
+class Renderable implements Component {
+    +visualID : int
+    +color : Color
+    +layer : int
+}
+' Abstract render data.
+' Sprite, glyph, or tile ID.
+
+class Visibility implements Component {
+    +visible : bool
+}
+' Used for fog-of-war, sleep state, etc.
+
+class Animation implements Component {
+    +frame : int
+    +frameTime : float
+    +loop : bool
+}
+' Optional animation support.
+
+' ======================
+' INPUT & CONTROL
+' ======================
+
+'class InputReceiver implements Component {
+'    +priority : int
+'}
+' Allows entity to receive input commands.
+
+'class Controllable implements Component {
+''}
+' Marker that maps input to actions.
+' Keeps input logic out of engine core.
+
+' ======================
+' SERIALIZATION / RESET
+' ======================
+
+'class Serializable implements Component {
+'    +version : int
+'}
+' Marks components that can be saved/loaded.
+
+class Persistent implements Component {
+}
+' Marker component.
+' Entity survives world reset / time loop.
+
+' ======================
+' DEBUG & TOOLING
+' ======================
+
+class Name implements Component {
+    +debugName : string
+}
+' Human-readable name for debugging.
+
+class DebugDraw implements Component {
+}
+' Visual debugging (colliders, paths, etc).
+
+}
 package "Entities" {
     class Entity {
         +id: int
