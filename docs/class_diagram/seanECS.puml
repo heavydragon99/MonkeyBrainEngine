@@ -151,7 +151,12 @@ class DebugDraw implements Component {
 }
 ' Visual debugging (colliders, paths, etc).
 
+  class IBehaviorScript implements Component {
+    + virtual setup()
+    + virtual run()
+  }
 }
+
 package "Entities" {
     class Entity {
         +id: int
