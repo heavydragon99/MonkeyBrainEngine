@@ -1,23 +1,18 @@
 #include "monkeyBrainEngine.h"
 #include <iostream>
 
-MonkeyBrainEngine::MonkeyBrainEngine() {
-  // Constructor implementation
-}
-
-MonkeyBrainEngine::~MonkeyBrainEngine() {
-  // Destructor implementation
-}
-
 void MonkeyBrainEngine::initialize() {
-  // Initialization code
+  addSystem(std::make_unique<PhysicsSystem>());
+  addSystem(std::make_unique<HealthSystem>());
 }
 
-void MonkeyBrainEngine::shutdown() {
-  // Shutdown code
-}
+void MonkeyBrainEngine::shutdown() { std::cout << "Engine shutdown.\n"; }
 
-void MonkeyBrainEngine::run() {
-  // Main execution loop
-  std::cout << "MonkeyBrainEngine is running!" << std::endl;
+void MonkeyBrainEngine::run(float aDt, int aFrames) {
+  std::cout << "Engine running...\n";
+  for (int i = 0; i < aFrames; ++i) {
+    for (auto &sys : mSystems) {
+      sys->update(mRegistry, aDt);
+    }
+  }
 }
