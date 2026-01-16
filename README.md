@@ -48,6 +48,16 @@ git push origin main
 
 ## TODO
 
+### Both
+
+- Discuss code standard.
+- - use snakeCase for variables and functions
+- - use camelCase for classes and structs
+- - use mMemberVariable for member variables
+- - use aArgument for function arguments
+- - include order is file name header, <> headers and then "" headers
+- - use include guards not #pragma once
+
 ### Siem
 
 - Mess aroung with dynamic archetype/chunking class generation
