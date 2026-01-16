@@ -1,7 +1,8 @@
 #ifndef MONKEYBRAINENGINE_H
 #define MONKEYBRAINENGINE_H
 
-#include "systems.h"
+#include "components.h"
+#include "system/system.h"
 #include <memory>
 #include <vector>
 
@@ -12,16 +13,14 @@ public:
 
   void initialize();
   void shutdown();
-  void run(float dt, int frames);
+  void run(float aDt, int aFrames);
   Registry &getRegistry() { return mRegistry; }
 
 private:
-  void addSystem(std::unique_ptr<System> system) {
-    mSystems.push_back(std::move(system));
-  }
+  void addSystem(std::unique_ptr<System::System> aSystem);
 
   Registry mRegistry;
-  std::vector<std::unique_ptr<System>> mSystems;
+  std::vector<std::unique_ptr<System::System>> mSystems;
 };
 
 #endif // MONKEYBRAINENGINE_H

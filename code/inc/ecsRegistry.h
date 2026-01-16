@@ -99,7 +99,6 @@
 #include <memory>
 #include <typeindex>
 #include <unordered_map>
-#include <vector>
 
 class Registry {
 public:

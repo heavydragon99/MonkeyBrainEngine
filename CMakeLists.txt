@@ -1,4 +1,3 @@
-
 cmake_minimum_required(VERSION 3.20)
 
 project(MonkeyBrainEngine
@@ -18,32 +17,69 @@ endif()
 # Build as a library (STATIC by default; change to SHARED if desired)
 add_library(MonkeyBrainEngine)
 
-# Add source files
-file(GLOB_RECURSE MONKEYBRAINENGINE_SOURCES
-  CONFIGURE_DEPENDS
-  ${PROJECT_SOURCE_DIR}/code/src/*.cpp
+# ---- CORE ENGINE SOURCES ----
+# Top-level engine sources
+file(GLOB_RECURSE ENGINE_CORE_SOURCES
+    CONFIGURE_DEPENDS
+    ${PROJECT_SOURCE_DIR}/code/src/*.cpp
 )
 
 target_sources(MonkeyBrainEngine
-  PRIVATE
-    ${MONKEYBRAINENGINE_SOURCES}
+    PRIVATE
+        ${ENGINE_CORE_SOURCES}
 )
 
-# Public include directory
+# Top-level include directory
 target_include_directories(MonkeyBrainEngine
-  PUBLIC
-    ${PROJECT_SOURCE_DIR}/code/inc
+    PUBLIC
+        ${PROJECT_SOURCE_DIR}/code/inc
 )
 
-# Reasonable warning flags
+# System.h include directory
+target_include_directories(MonkeyBrainEngine
+    PUBLIC
+        ${PROJECT_SOURCE_DIR}/code/systems/inc
+)
+
+# ---- SYSTEMS ----
+# Automatically add each system as a module
+# Each system has its own inc/src folder
+file(GLOB SYSTEM_FOLDERS RELATIVE ${PROJECT_SOURCE_DIR}/code/systems
+     ${PROJECT_SOURCE_DIR}/code/systems/*)
+
+foreach(SYSTEM_NAME ${SYSTEM_FOLDERS})
+  if(IS_DIRECTORY "${PROJECT_SOURCE_DIR}/code/systems/${SYSTEM_NAME}")
+    # Grab sources inside system/src
+    file(GLOB_RECURSE SYSTEM_SOURCES
+            CONFIGURE_DEPENDS
+            ${PROJECT_SOURCE_DIR}/code/systems/${SYSTEM_NAME}/src/*.cpp
+        )
+
+    # Add sources to engine library
+    target_sources(MonkeyBrainEngine
+            PRIVATE
+                ${SYSTEM_SOURCES}
+        )
+
+    # Add system's inc folder as include directory
+    target_include_directories(MonkeyBrainEngine
+            PUBLIC
+                ${PROJECT_SOURCE_DIR}/code/systems/${SYSTEM_NAME}/inc
+        )
+  endif()
+endforeach()
+
+# ---- WARNING FLAGS ----
 target_compile_options(MonkeyBrainEngine
-  PRIVATE
-    -Wall
-    -Wextra
-    -Wpedantic
+    PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
 )
 
 # Ensure compile_commands.json is generated
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# ---- GAME SUBDIRECTORY ----
 add_subdirectory(game)
+
