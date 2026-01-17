@@ -4,7 +4,10 @@
 
 #include "components.h"
 
-using namespace System;
+bool PhysicsSystem::initialize() {
+  std::cout << "PhysicsSystem initialized.\n";
+  return true;
+}
 
 void PhysicsSystem::update(Registry &aRegistry, float aDt) {
   aRegistry.forEach<Transform, Velocity>(

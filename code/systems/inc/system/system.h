@@ -2,11 +2,10 @@
 #define SYSTEMS_H
 
 #include "ecsRegistry.h"
-namespace System {
 class System {
 public:
   virtual ~System() = default;
-  virtual void update(Registry &registry, float dt) = 0;
+  virtual bool initialize() = 0;
+  virtual void update(Registry &aRegistry, float aDt) = 0;
 };
-} // namespace System
 #endif // SYSTEMS_H

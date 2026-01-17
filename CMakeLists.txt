@@ -14,6 +14,26 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
 endif()
 
+# ---- GRAPHICS BACKEND SELECTION ----
+set(GRAPHICS_BACKEND "linux_vulkan" CACHE STRING
+    "Graphics backend (linux_vulkan, linux_opengl, windows_dx12, mac_metal)"
+)
+
+set(VALID_GRAPHICS_BACKENDS
+    linux_vulkan
+    linux_opengl
+    windows_dx12
+    mac_metal
+)
+
+list(FIND VALID_GRAPHICS_BACKENDS ${GRAPHICS_BACKEND} BACKEND_INDEX)
+if(BACKEND_INDEX EQUAL -1)
+  message(FATAL_ERROR
+        "Invalid GRAPHICS_BACKEND: ${GRAPHICS_BACKEND}\n"
+        "Valid values: ${VALID_GRAPHICS_BACKENDS}"
+    )
+endif()
+
 # Build as a library (STATIC by default; change to SHARED if desired)
 add_library(MonkeyBrainEngine)
 
@@ -41,14 +61,15 @@ target_include_directories(MonkeyBrainEngine
         ${PROJECT_SOURCE_DIR}/code/systems/inc
 )
 
-# ---- SYSTEMS ----
+# ---- SYSTEMS (NON-GRAPHICS) ----
 # Automatically add each system as a module
 # Each system has its own inc/src folder
 file(GLOB SYSTEM_FOLDERS RELATIVE ${PROJECT_SOURCE_DIR}/code/systems
      ${PROJECT_SOURCE_DIR}/code/systems/*)
 
 foreach(SYSTEM_NAME ${SYSTEM_FOLDERS})
-  if(IS_DIRECTORY "${PROJECT_SOURCE_DIR}/code/systems/${SYSTEM_NAME}")
+  if(IS_DIRECTORY "${PROJECT_SOURCE_DIR}/code/systems/${SYSTEM_NAME}"
+     AND NOT SYSTEM_NAME STREQUAL "graphics")
     # Grab sources inside system/src
     file(GLOB_RECURSE SYSTEM_SOURCES
             CONFIGURE_DEPENDS
@@ -68,6 +89,64 @@ foreach(SYSTEM_NAME ${SYSTEM_FOLDERS})
         )
   endif()
 endforeach()
+
+# ---- GRAPHICS SYSTEM INTERFACE ----
+target_include_directories(MonkeyBrainEngine
+    PUBLIC
+        ${PROJECT_SOURCE_DIR}/code/systems/graphics/inc
+)
+
+
+# ---- GRAPHICS BACKEND IMPLEMENTATION ----
+if(GRAPHICS_BACKEND STREQUAL "linux_vulkan")
+
+  if(NOT UNIX OR APPLE)
+    message(FATAL_ERROR "linux_vulkan selected but platform is not Linux")
+  endif()
+
+  message(STATUS "Using graphics backend: Linux Vulkan")
+
+  file(GLOB_RECURSE GRAPHICS_BACKEND_SOURCES
+        CONFIGURE_DEPENDS
+        ${PROJECT_SOURCE_DIR}/code/systems/graphics/linux/vulkan/src/*.cpp
+    )
+
+  target_sources(MonkeyBrainEngine PRIVATE ${GRAPHICS_BACKEND_SOURCES})
+
+  target_include_directories(MonkeyBrainEngine
+        PUBLIC
+            ${PROJECT_SOURCE_DIR}/code/systems/graphics/linux/vulkan/inc
+    )
+
+  find_package(Vulkan REQUIRED)
+  find_package(SDL2 REQUIRED)
+
+  target_link_libraries(MonkeyBrainEngine
+        PUBLIC
+            Vulkan::Vulkan
+            SDL2::SDL2
+    )
+
+  target_compile_definitions(MonkeyBrainEngine
+        PUBLIC
+            MB_PLATFORM_LINUX
+            MB_GRAPHICS_VULKAN
+    )
+
+elseif(GRAPHICS_BACKEND STREQUAL "linux_opengl")
+
+  message(FATAL_ERROR "linux_opengl backend not implemented yet")
+
+elseif(GRAPHICS_BACKEND STREQUAL "windows_dx12")
+
+  message(FATAL_ERROR "windows_dx12 backend not implemented yet")
+
+elseif(GRAPHICS_BACKEND STREQUAL "mac_metal")
+
+  message(FATAL_ERROR "mac_metal backend not implemented yet")
+
+endif()
+
 
 # ---- WARNING FLAGS ----
 target_compile_options(MonkeyBrainEngine

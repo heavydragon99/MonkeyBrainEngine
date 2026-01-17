@@ -1,10 +1,13 @@
 #ifndef MONKEYBRAINENGINE_H
 #define MONKEYBRAINENGINE_H
 
-#include "components.h"
-#include "system/system.h"
 #include <memory>
 #include <vector>
+
+#include "components.h"
+#include "graphics/graphicsSystem.h"
+#include "physics/physicsSystem.h"
+#include "system/system.h"
 
 class MonkeyBrainEngine {
 public:
@@ -17,10 +20,12 @@ public:
   Registry &getRegistry() { return mRegistry; }
 
 private:
-  void addSystem(std::unique_ptr<System::System> aSystem);
+  void addSystem(std::unique_ptr<System> aSystem);
 
   Registry mRegistry;
-  std::vector<std::unique_ptr<System::System>> mSystems;
+  std::vector<std::unique_ptr<System>> mSystems;
+  GraphicsSystem *mGraphicsSystem = nullptr;
+  PhysicsSystem *mPhysicsSystem = nullptr;
 };
 
 #endif // MONKEYBRAINENGINE_H
