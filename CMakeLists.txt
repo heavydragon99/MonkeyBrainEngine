@@ -16,12 +16,11 @@ endif()
 
 # ---- GRAPHICS BACKEND SELECTION ----
 set(GRAPHICS_BACKEND "linux_vulkan" CACHE STRING
-    "Graphics backend (linux_vulkan, linux_opengl, windows_dx12, mac_metal)"
+    "Graphics backend (linux_vulkan, windows_dx12, mac_metal)"
 )
 
 set(VALID_GRAPHICS_BACKENDS
     linux_vulkan
-    linux_opengl
     windows_dx12
     mac_metal
 )
@@ -108,14 +107,14 @@ if(GRAPHICS_BACKEND STREQUAL "linux_vulkan")
 
   file(GLOB_RECURSE GRAPHICS_BACKEND_SOURCES
         CONFIGURE_DEPENDS
-        ${PROJECT_SOURCE_DIR}/code/systems/graphics/linux/vulkan/src/*.cpp
+        ${PROJECT_SOURCE_DIR}/code/systems/graphics/vulkan/src/*.cpp
     )
 
   target_sources(MonkeyBrainEngine PRIVATE ${GRAPHICS_BACKEND_SOURCES})
 
   target_include_directories(MonkeyBrainEngine
         PUBLIC
-            ${PROJECT_SOURCE_DIR}/code/systems/graphics/linux/vulkan/inc
+            ${PROJECT_SOURCE_DIR}/code/systems/graphics/vulkan/inc
     )
 
   find_package(Vulkan REQUIRED)
@@ -132,10 +131,6 @@ if(GRAPHICS_BACKEND STREQUAL "linux_vulkan")
             MB_PLATFORM_LINUX
             MB_GRAPHICS_VULKAN
     )
-
-elseif(GRAPHICS_BACKEND STREQUAL "linux_opengl")
-
-  message(FATAL_ERROR "linux_opengl backend not implemented yet")
 
 elseif(GRAPHICS_BACKEND STREQUAL "windows_dx12")
 
