@@ -41,23 +41,25 @@ void VulkanGraphicsSystem::shutdown() {
 
 void VulkanGraphicsSystem::initSDL(int width, int height) {
   if (SDL_Init(SDL_INIT_VIDEO) != 0)
-    throw std::runtime_error("Failed to init SDL");
+    throw std::runtime_error(std::string("Failed to init SDL: ") +
+                             SDL_GetError());
 
-  m_window = SDL_CreateWindow("Vulkan Engine", SDL_WINDOWPOS_CENTERED,
-                              SDL_WINDOWPOS_CENTERED, width, height,
-                              SDL_WINDOW_VULKAN | SDL_WINDOW_SHOWN);
+  m_window =
+      SDL_CreateWindow("Vulkan Engine", width, height, SDL_WINDOW_VULKAN);
 
   if (!m_window)
-    throw std::runtime_error("Failed to create SDL window");
+    throw std::runtime_error(std::string("Failed to create SDL window: ") +
+                             SDL_GetError());
 }
 
 void VulkanGraphicsSystem::initVulkan() {
-  unsigned int extensionCount = 0;
-  SDL_Vulkan_GetInstanceExtensions(m_window, &extensionCount, nullptr);
+  // SDL3 Vulkan extensions
+  Uint32 extensionCount = 0;
+  const char *const *extensions =
+      SDL_Vulkan_GetInstanceExtensions(&extensionCount);
 
-  std::vector<const char *> extensions(extensionCount);
-  SDL_Vulkan_GetInstanceExtensions(m_window, &extensionCount,
-                                   extensions.data());
+  std::vector<const char *> extensionList(extensions,
+                                          extensions + extensionCount);
 
   VkApplicationInfo appInfo{};
   appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -70,20 +72,22 @@ void VulkanGraphicsSystem::initVulkan() {
   VkInstanceCreateInfo createInfo{};
   createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
   createInfo.pApplicationInfo = &appInfo;
-  createInfo.enabledExtensionCount = extensions.size();
-  createInfo.ppEnabledExtensionNames = extensions.data();
+  createInfo.enabledExtensionCount =
+      static_cast<uint32_t>(extensionList.size());
+  createInfo.ppEnabledExtensionNames = extensionList.data();
 
   if (vkCreateInstance(&createInfo, nullptr, &m_instance) != VK_SUCCESS)
     throw std::runtime_error("Failed to create Vulkan instance");
 
-  if (!SDL_Vulkan_CreateSurface(m_window, m_instance, &m_surface))
+  // SDL3 Vulkan surface
+  if (!SDL_Vulkan_CreateSurface(m_window, m_instance, nullptr, &m_surface))
     throw std::runtime_error("Failed to create Vulkan surface");
 }
 
 void VulkanGraphicsSystem::pollEvents() {
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
-    if (event.type == SDL_QUIT)
+    if (event.type == SDL_EVENT_QUIT)
       m_quit = true;
   }
 }

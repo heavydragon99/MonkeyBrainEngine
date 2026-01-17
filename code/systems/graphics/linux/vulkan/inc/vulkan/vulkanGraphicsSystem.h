@@ -2,8 +2,8 @@
 #define VULKANGRAPHICSSYSTEM_H
 
 #include "graphics/graphicsSystem.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_vulkan.h>
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_vulkan.h>
 #include <vulkan/vulkan.h>
 
 class VulkanGraphicsSystem final : public GraphicsSystem {

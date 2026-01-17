@@ -74,9 +74,8 @@ void MonkeyBrainEngine::run() {
     // --- Poll input / events ---
     if (mGraphicsSystem) {
       // Exit if window closed or Esc pressed
-      const Uint8 *keyboardState = SDL_GetKeyboardState(nullptr);
-      if (mGraphicsSystem->shouldQuit() ||
-          (keyboardState[SDL_SCANCODE_ESCAPE] != 0)) {
+      const bool *keyboardState = SDL_GetKeyboardState(nullptr);
+      if (mGraphicsSystem->shouldQuit() || keyboardState[SDL_SCANCODE_ESCAPE]) {
         running = false;
         break;
       }

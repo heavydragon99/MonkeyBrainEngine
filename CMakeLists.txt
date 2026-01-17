@@ -119,12 +119,12 @@ if(GRAPHICS_BACKEND STREQUAL "linux_vulkan")
     )
 
   find_package(Vulkan REQUIRED)
-  find_package(SDL2 REQUIRED)
+  find_package(SDL3 REQUIRED)
 
   target_link_libraries(MonkeyBrainEngine
         PUBLIC
             Vulkan::Vulkan
-            SDL2::SDL2
+            SDL3::SDL3
     )
 
   target_compile_definitions(MonkeyBrainEngine
