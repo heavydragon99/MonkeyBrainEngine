@@ -16,15 +16,12 @@ void MonkeyBrainEngine::initialize() {
   mPhysicsSystem = physics.get();
   addSystem(std::move(physics));
 
-  mGraphicsSystem->initialize();
-  mPhysicsSystem->initialize();
-
-  //  for (auto &sys : mSystems) {
-  //    if (!sys->initialize()) {
-  //      std::cerr << "Failed to initialize a system.\n";
-  //      return;
-  //    }
-  //  }
+  for (auto &sys : mSystems) {
+    if (!sys->initialize()) {
+      std::cerr << "Failed to initialize a system.\n";
+      return;
+    }
+  }
 }
 
 void MonkeyBrainEngine::shutdown() {
