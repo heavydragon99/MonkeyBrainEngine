@@ -30,20 +30,70 @@ void MonkeyBrainEngine::shutdown() {
     mGraphicsSystem = nullptr;
   }
 
+  if (mPhysicsSystem) {
+    mPhysicsSystem = nullptr;
+  }
+
   mSystems.clear();
   std::cout << "Engine shutdown.\n";
 }
 
-void MonkeyBrainEngine::run(float aDt, int aFrames) {
-  std::cout << "Engine running...\n";
+void MonkeyBrainEngine::run() {
+  std::cout << "Engine running (max 60 FPS)...\n";
 
-  for (int i = 0; i < aFrames; ++i) {
+  const double targetFrameTime = 1.0 / 60.0; // 60 FPS
+  double accumulator = 0.0;
 
-    if (mGraphicsSystem && mGraphicsSystem->shouldQuit())
-      break;
+  Uint64 prevCounter = SDL_GetPerformanceCounter();
+  double fpsTimer = 0.0;
+  int frames = 0;
 
-    for (auto &sys : mSystems) {
-      sys->update(mRegistry, aDt);
+  bool running = true;
+
+  while (running && !mGraphicsSystem->shouldQuit()) {
+    // --- Compute delta time ---
+    Uint64 currentCounter = SDL_GetPerformanceCounter();
+    double deltaTime =
+        double(currentCounter - prevCounter) / SDL_GetPerformanceFrequency();
+    prevCounter = currentCounter;
+
+    accumulator += deltaTime;
+
+    // --- Input system ---
+    // for (auto &sys : mSystems) {
+    //    if (sys->isInputSystem()) // You can add a flag in System
+    //        sys->update(mRegistry, static_cast<float>(deltaTime));
+    //}
+
+    // --- Behaviour system ---
+    // for (auto &sys : mSystems) {
+    //    if (sys->isBehaviourSystem())
+    //        sys->update(mRegistry, static_cast<float>(deltaTime));
+    //}
+
+    // --- Poll input / events ---
+    if (mGraphicsSystem) {
+      // Exit if window closed or Esc pressed
+      const Uint8 *keyboardState = SDL_GetKeyboardState(nullptr);
+      if (mGraphicsSystem->shouldQuit() ||
+          (keyboardState[SDL_SCANCODE_ESCAPE] != 0)) {
+        running = false;
+        break;
+      }
+    }
+
+    // --- Physics system ---
+    mPhysicsSystem->update(mRegistry, static_cast<float>(deltaTime));
+
+    // --- Graphics / Render system ---
+    mGraphicsSystem->update(mRegistry, static_cast<float>(deltaTime));
+
+    // --- Limit to 60 FPS ---
+    Uint64 frameEndCounter = SDL_GetPerformanceCounter();
+    double frameTime = double(frameEndCounter - currentCounter) /
+                       SDL_GetPerformanceFrequency();
+    if (frameTime < targetFrameTime) {
+      SDL_Delay(Uint32((targetFrameTime - frameTime) * 1000.0));
     }
   }
 }

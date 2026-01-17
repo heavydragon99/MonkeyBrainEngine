@@ -16,7 +16,7 @@ public:
 
   void initialize();
   void shutdown();
-  void run(float aDt, int aFrames);
+  void run();
   Registry &getRegistry() { return mRegistry; }
 
 private:

@@ -1,5 +1,6 @@
-
 #include "monkeyBrainEngine.h"
+
+#include <iostream>
 
 int main() {
   MonkeyBrainEngine engine;
@@ -15,8 +16,16 @@ int main() {
   registry.add(enemy, Transform{{10, 10}, 0, {1, 1}});
 
   registry.add(npc, Transform{{5, 5}, 0, {1, 1}});
-
-  engine.initialize();
-  engine.run(1.0f, 3);
+  try {
+    engine.initialize();
+  } catch (const std::exception &e) {
+    std::cerr << "Failed to initialize engine: " << e.what() << "\n";
+    return -1;
+  }
+  try {
+    engine.run();
+  } catch (const std::exception &e) {
+    std::cerr << "Error during engine run: " << e.what() << "\n";
+  }
   engine.shutdown();
 }
