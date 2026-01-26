@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <vector>
 
-VulkanGraphicsSystem::~VulkanGraphicsSystem() { shutdown(); }
+VulkanGraphicsSystem::~VulkanGraphicsSystem() {}
 
 bool VulkanGraphicsSystem::initialize() {
   // Default window size
