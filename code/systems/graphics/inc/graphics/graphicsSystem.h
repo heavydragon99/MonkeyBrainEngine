@@ -3,7 +3,7 @@
 
 #include "system/system.h"
 
-class GraphicsSystem : public System::System {
+class GraphicsSystem : public System {
 public:
   virtual ~GraphicsSystem() = default;
 
