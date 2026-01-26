@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "graphics/graphicsBackend.h"
+#include "input/inputSystem.h"
 
 void MonkeyBrainEngine::initialize() {
   std::cout << "Using graphics backend: " << typeid(ActiveGraphicsSystem).name()
@@ -86,6 +87,8 @@ void MonkeyBrainEngine::run() {
 
     // --- Graphics / Render system ---
     mGraphicsSystem->update(mRegistry, static_cast<float>(deltaTime));
+
+    InputSystem::Get().update(mRegistry, static_cast<float>(deltaTime));
 
     // --- Limit to 60 FPS ---
     Uint64 frameEndCounter = SDL_GetPerformanceCounter();
