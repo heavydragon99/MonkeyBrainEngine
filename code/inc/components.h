@@ -70,6 +70,64 @@ struct vector2 {
   }
 };
 
+struct vector3 {
+  float x = 0.0f;
+  float y = 0.0f;
+  float z = 0.0f;
+
+  constexpr vector3 operator+(const vector3 &aOther) const {
+    return {x + aOther.x, y + aOther.y, z + aOther.z};
+  }
+
+  constexpr vector3 operator-(const vector3 &aOther) const {
+    return {x - aOther.x, y - aOther.y, z - aOther.z};
+  }
+
+  constexpr vector3 operator*(float aScale) const {
+    return {x * aScale, y * aScale, z * aScale};
+  }
+
+  constexpr vector3 operator/(float aScale) const {
+    return {x / aScale, y / aScale, z / aScale};
+  }
+
+  constexpr vector3 &operator+=(const vector3 &aOther) {
+    x += aOther.x;
+    y += aOther.y;
+    z += aOther.z;
+    return *this;
+  }
+
+  constexpr vector3 &operator-=(const vector3 &aOther) {
+    x -= aOther.x;
+    y -= aOther.y;
+    z -= aOther.z;
+    return *this;
+  }
+
+  constexpr vector3 &operator*=(float aScale) {
+    x *= aScale;
+    y *= aScale;
+    z *= aScale;
+    return *this;
+  }
+
+  constexpr vector3 &operator/=(float aScale) {
+    x /= aScale;
+    y /= aScale;
+    z /= aScale;
+    return *this;
+  }
+
+  constexpr bool operator==(const vector3 &aOther) const {
+    return x == aOther.x && y == aOther.y && z == aOther.z;
+  }
+
+  constexpr bool operator!=(const vector3 &aOther) const {
+    return !(*this == aOther);
+  }
+};
+
 struct Transform {
   vector2 position{0.0f, 0.0f};
   float rotation = 0.0f;

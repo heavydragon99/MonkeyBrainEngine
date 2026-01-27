@@ -1,6 +1,7 @@
 #ifndef GRAPHICSYSTEM_H
 #define GRAPHICSYSTEM_H
 
+#include "debugDraw.h"
 #include "system/system.h"
 
 class GraphicsSystem : public System {
@@ -12,5 +13,7 @@ public:
   virtual void shutdown() = 0;
 
   virtual bool shouldQuit() const = 0;
+
+  virtual void drawDebug(const std::vector<DebugLine> &aLines) = 0;
 };
 #endif // GRAPHICSYSTEM_H

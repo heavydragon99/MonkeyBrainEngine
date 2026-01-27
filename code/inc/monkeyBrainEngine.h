@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "components.h"
+#include "debugDraw/debugDrawSystem.h"
 #include "ecsRegistry.h"
 #include "graphics/graphicsSystem.h"
 #include "input/inputSystem.h"
@@ -31,6 +32,7 @@ private:
   GraphicsSystem *mGraphicsSystem = nullptr;
   PhysicsSystem *mPhysicsSystem = nullptr;
   ScriptsSystem *mScriptsSystem = nullptr;
+  DebugDrawSystem *mDebugDrawSystem = nullptr;
 };
 
 #endif // MONKEYBRAINENGINE_H

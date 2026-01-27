@@ -7,6 +7,20 @@
 #include <stdexcept>
 #include <vector>
 
+static uint32_t findMemoryType(VkPhysicalDevice phys, uint32_t typeFilter,
+                               VkMemoryPropertyFlags props) {
+  VkPhysicalDeviceMemoryProperties mem{};
+  vkGetPhysicalDeviceMemoryProperties(phys, &mem);
+
+  for (uint32_t i = 0; i < mem.memoryTypeCount; i++) {
+    if ((typeFilter & (1 << i)) &&
+        (mem.memoryTypes[i].propertyFlags & props) == props)
+      return i;
+  }
+
+  throw std::runtime_error("No suitable memory type");
+}
+
 VulkanGraphicsSystem::~VulkanGraphicsSystem() {}
 
 bool VulkanGraphicsSystem::initialize() {
@@ -19,6 +33,8 @@ bool VulkanGraphicsSystem::initialize() {
 bool VulkanGraphicsSystem::initialize(int width, int height) {
   initSDL(width, height);
   initVulkan();
+  createDebugVertexBuffer();
+  createDebugPipeline();
   return true;
 }
 
@@ -38,6 +54,20 @@ void VulkanGraphicsSystem::shutdown() {
     // Without this, the GPU could still be using resources you free.
     vkDeviceWaitIdle(mDevice);
   }
+  if (mDebugPipeline != VK_NULL_HANDLE)
+    vkDestroyPipelineLayout(mDevice, mDebugPipelineLayout, nullptr);
+
+  if (mDebugVertexBuffer != VK_NULL_HANDLE)
+    vkDestroyBuffer(mDevice, mDebugVertexBuffer, nullptr);
+
+  if (mDebugVertexMemory != VK_NULL_HANDLE)
+    vkFreeMemory(mDevice, mDebugVertexMemory, nullptr);
+
+  if (mDebugPipeline != VK_NULL_HANDLE)
+    vkDestroyPipeline(mDevice, mDebugPipeline, nullptr);
+
+  if (mDebugPipelineLayout != VK_NULL_HANDLE)
+    vkDestroyPipelineLayout(mDevice, mDebugPipelineLayout, nullptr);
 
   /* -----------------------------------------------------------
      Synchronization objects
@@ -518,4 +548,54 @@ void VulkanGraphicsSystem::drawFrame() {
   presentInfo.pImageIndices = &imageIndex;
 
   vkQueuePresentKHR(mPresentQueue, &presentInfo);
+}
+
+// ------------------------------------------------------------
+// Debug draw (CALLED INSIDE render pass)
+// ------------------------------------------------------------
+
+void VulkanGraphicsSystem::drawDebug(const std::vector<DebugLine> &lines) {
+  if (lines.empty())
+    return;
+
+  uploadDebugVertices(lines);
+
+  vkCmdBindPipeline(mCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                    mDebugPipeline);
+
+  VkDeviceSize offset = 0;
+  vkCmdBindVertexBuffers(mCommandBuffer, 0, 1, &mDebugVertexBuffer, &offset);
+
+  vkCmdDraw(mCommandBuffer, mDebugVertexCount, 1, 0, 0);
+}
+
+// ------------------------------------------------------------
+// Vertex upload
+// ------------------------------------------------------------
+
+vector2 VulkanGraphicsSystem::toNDC(const vector2 &p) const {
+  return {(p.x / mSwapchainExtent.width) * 2.0f - 1.0f,
+          1.0f - (p.y / mSwapchainExtent.height) * 2.0f};
+}
+
+void VulkanGraphicsSystem::uploadDebugVertices(
+    const std::vector<DebugLine> &lines) {
+  std::vector<DebugVertex> verts;
+  verts.reserve(lines.size() * 2);
+
+  for (auto &l : lines) {
+    vector2 a = toNDC(l.a);
+    vector2 b = toNDC(l.b);
+
+    verts.push_back({a.x, a.y, l.color.x, l.color.y, l.color.z});
+    verts.push_back({b.x, b.y, l.color.x, l.color.y, l.color.z});
+  }
+
+  mDebugVertexCount = static_cast<uint32_t>(verts.size());
+
+  void *data;
+  vkMapMemory(mDevice, mDebugVertexMemory, 0,
+              verts.size() * sizeof(DebugVertex), 0, &data);
+  memcpy(data, verts.data(), verts.size() * sizeof(DebugVertex));
+  vkUnmapMemory(mDevice, mDebugVertexMemory);
 }

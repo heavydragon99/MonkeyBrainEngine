@@ -22,6 +22,10 @@ void MonkeyBrainEngine::initialize() {
   mScriptsSystem = scripts.get();
   addSystem(std::move(scripts));
 
+  auto debugDraw = std::make_unique<DebugDrawSystem>();
+  mDebugDrawSystem = debugDraw.get();
+  addSystem(std::move(debugDraw));
+
   InputSystem::Get().initialize();
 
   for (auto &sys : mSystems) {
@@ -80,8 +84,12 @@ void MonkeyBrainEngine::run() {
     // --- Physics system ---
     mPhysicsSystem->update(mRegistry, static_cast<float>(deltaTime));
 
+    // --- Debug draw system ---
+    mDebugDrawSystem->update(mRegistry, static_cast<float>(deltaTime));
+
     // --- Graphics / Render system ---
     mGraphicsSystem->update(mRegistry, static_cast<float>(deltaTime));
+    mGraphicsSystem->drawDebug(mDebugDrawSystem->getContext().lines);
 
     // --- Scripts system ---
     mScriptsSystem->update(mRegistry, static_cast<float>(deltaTime));
