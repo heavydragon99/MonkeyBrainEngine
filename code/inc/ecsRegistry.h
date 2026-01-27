@@ -94,47 +94,52 @@
 #ifndef ECSREGISTRY_H
 #define ECSREGISTRY_H
 
-#include "entity.h"
-
+#include <iostream>
 #include <memory>
+#include <tuple>
+#include <type_traits>
 #include <typeindex>
 #include <unordered_map>
 
+#include "entity.h"
+
 class Registry {
 public:
+  Registry() = default;
+
+  // ---------------- Entities ----------------
   Entity createEntity() { return ++mNextEntity; }
 
-  /* ---------------- Add Component ---------------- */
+  // ---------------- Add Components ----------------
 
-  template <typename T> void add(Entity entity, T component) {
-    getStorage<T>()[entity] = std::move(component);
+  template <typename T> void add(Entity entity, T &&component) {
+    getStorage<std::decay_t<T>>().emplace(entity, std::forward<T>(component));
+    std::cout << "Added component of type " << typeid(T).name() << " to entity "
+              << entity << "\n";
   }
 
-  /* ---------------- Get Component ---------------- */
-
+  // ---------------- Get Components ----------------
   template <typename T> T *get(Entity entity) {
     auto &storage = getStorage<T>();
     auto it = storage.find(entity);
     return (it != storage.end()) ? &it->second : nullptr;
   }
 
-  /* ---------------- Has Component ---------------- */
-
+  // ---------------- Has Components ----------------
   template <typename T> bool has(Entity entity) {
     auto &storage = getStorage<T>();
     return storage.contains(entity);
   }
 
-  /* ---------------- forEach ---------------- */
-
+  // ---------------- forEach ----------------
   template <typename... Components, typename Func> void forEach(Func &&func) {
-    // Use the first component type as the primary iterator
     using First = std::tuple_element_t<0, std::tuple<Components...>>;
     auto &primary = getStorage<First>();
 
     for (auto &[entity, firstComponent] : primary) {
+
       if ((has<Components>(entity) && ...)) {
-        func(*get<Components>(entity)...);
+        func(entity, *get<Components>(entity)...);
       }
     }
   }
@@ -142,8 +147,7 @@ public:
 private:
   Entity mNextEntity = 0;
 
-  /* ---------------- Storage ---------------- */
-
+  // ---------------- Storage ----------------
   struct IStorage {
     virtual ~IStorage() = default;
   };
@@ -169,4 +173,4 @@ private:
   }
 };
 
-#endif
+#endif // ECSREGISTRY_H

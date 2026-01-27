@@ -21,6 +21,8 @@ bool InputSystem::initialize() {
   mMouseStates[MouseButton::Right] = ButtonState::Up;
   mMouseStates[MouseButton::Middle] = ButtonState::Up;
 
+  std::cout << "InputSystem initialized.\n";
+
   return true;
 }
 

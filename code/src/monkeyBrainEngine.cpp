@@ -4,6 +4,7 @@
 
 #include "graphics/graphicsBackend.h"
 #include "input/inputSystem.h"
+#include "scripts/scriptsSystem.h"
 
 void MonkeyBrainEngine::initialize() {
   std::cout << "Using graphics backend: " << typeid(ActiveGraphicsSystem).name()
@@ -16,6 +17,12 @@ void MonkeyBrainEngine::initialize() {
   auto physics = std::make_unique<PhysicsSystem>();
   mPhysicsSystem = physics.get();
   addSystem(std::move(physics));
+
+  auto scripts = std::make_unique<ScriptsSystem>();
+  mScriptsSystem = scripts.get();
+  addSystem(std::move(scripts));
+
+  InputSystem::Get().initialize();
 
   for (auto &sys : mSystems) {
     if (!sys->initialize()) {
@@ -60,18 +67,6 @@ void MonkeyBrainEngine::run() {
 
     accumulator += deltaTime;
 
-    // --- Input system ---
-    // for (auto &sys : mSystems) {
-    //    if (sys->isInputSystem()) // You can add a flag in System
-    //        sys->update(mRegistry, static_cast<float>(deltaTime));
-    //}
-
-    // --- Behaviour system ---
-    // for (auto &sys : mSystems) {
-    //    if (sys->isBehaviourSystem())
-    //        sys->update(mRegistry, static_cast<float>(deltaTime));
-    //}
-
     // --- Poll input / events ---
     if (mGraphicsSystem) {
       // Exit if window closed or Esc pressed
@@ -88,6 +83,10 @@ void MonkeyBrainEngine::run() {
     // --- Graphics / Render system ---
     mGraphicsSystem->update(mRegistry, static_cast<float>(deltaTime));
 
+    // --- Scripts system ---
+    mScriptsSystem->update(mRegistry, static_cast<float>(deltaTime));
+
+    // --- Input system update ---
     InputSystem::Get().update(mRegistry, static_cast<float>(deltaTime));
 
     // --- Limit to 60 FPS ---
@@ -97,7 +96,7 @@ void MonkeyBrainEngine::run() {
     if (frameTime < targetFrameTime) {
       SDL_Delay(Uint32((targetFrameTime - frameTime) * 1000.0));
     }
-    // TODO Seperate a fixed update and variable update (physics fixed,
+    // TODO: Seperate a fixed update and variable update (physics fixed,
     // animation variable)
   }
 }

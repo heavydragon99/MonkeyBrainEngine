@@ -5,8 +5,12 @@
 #include <vector>
 
 #include "components.h"
+#include "ecsRegistry.h"
 #include "graphics/graphicsSystem.h"
+#include "input/inputSystem.h"
 #include "physics/physicsSystem.h"
+#include "scriptHelper.h"
+#include "scripts/scriptsSystem.h"
 #include "system/system.h"
 
 class MonkeyBrainEngine {
@@ -26,6 +30,7 @@ private:
   std::vector<std::unique_ptr<System>> mSystems;
   GraphicsSystem *mGraphicsSystem = nullptr;
   PhysicsSystem *mPhysicsSystem = nullptr;
+  ScriptsSystem *mScriptsSystem = nullptr;
 };
 
 #endif // MONKEYBRAINENGINE_H

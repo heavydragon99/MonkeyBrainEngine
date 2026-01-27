@@ -10,8 +10,9 @@ bool PhysicsSystem::initialize() {
 }
 
 void PhysicsSystem::update(Registry &aRegistry, float aDt) {
-  aRegistry.forEach<Transform, Velocity>(
-      [aDt](Transform &aTransform, Velocity &aVelocity) {
-        aTransform.position += aVelocity.speed * aDt;
-      });
+  aRegistry.forEach<Transform, Velocity>([aDt]([[maybe_unused]] Entity aEntity,
+                                               Transform &aTransform,
+                                               Velocity &aVelocity) {
+    aTransform.position += aVelocity.speed * aDt;
+  });
 }

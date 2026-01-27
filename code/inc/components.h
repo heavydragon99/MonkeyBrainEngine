@@ -7,6 +7,8 @@
 #include <string>
 #include <variant>
 
+#include "ecsRegistry.h"
+
 template <typename T> struct ComponentTypeID {
   static size_t id() {
     static size_t mNextID = 0;
@@ -142,6 +144,33 @@ struct Name {
 
 struct DebugDraw {
   bool isEnabled = true;
+};
+
+struct Script {
+  virtual ~Script() = default;
+
+  virtual void onCreate([[maybe_unused]] Entity aEntity,
+                        [[maybe_unused]] Registry &aRegistry) {}
+
+  virtual void onUpdate([[maybe_unused]] Entity aEntity,
+                        [[maybe_unused]] Registry &aRegistry,
+                        [[maybe_unused]] float aDt) {}
+
+  virtual void onFixedUpdate([[maybe_unused]] Entity aEntity,
+                             [[maybe_unused]] Registry &aRegistry,
+                             [[maybe_unused]] float aFixedDt) {}
+
+  virtual void onDestroy([[maybe_unused]] Entity aEntity,
+                         [[maybe_unused]] Registry &aRegistry) {}
+};
+
+struct ScriptComponent {
+  std::unique_ptr<Script> instance;
+  bool enabled = true;
+  bool initialized = false;
+
+  ScriptComponent(std::unique_ptr<Script> script)
+      : instance(std::move(script)) {}
 };
 
 #endif // COMPONENTS_H
