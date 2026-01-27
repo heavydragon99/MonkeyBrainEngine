@@ -97,6 +97,8 @@ void MonkeyBrainEngine::run() {
     if (frameTime < targetFrameTime) {
       SDL_Delay(Uint32((targetFrameTime - frameTime) * 1000.0));
     }
+    // TODO Seperate a fixed update and variable update (physics fixed,
+    // animation variable)
   }
 }
 

@@ -16,51 +16,51 @@ template <typename T> struct ComponentTypeID {
 };
 
 struct vector2 {
-  float mX = 0.0f;
-  float mY = 0.0f;
+  float x = 0.0f;
+  float y = 0.0f;
 
   constexpr vector2 operator+(const vector2 &aOther) const {
-    return {mX + aOther.mX, mY + aOther.mY};
+    return {x + aOther.x, y + aOther.y};
   }
   constexpr vector2 operator-(const vector2 &aOther) const {
-    return {mX - aOther.mX, mY - aOther.mY};
+    return {x - aOther.x, y - aOther.y};
   }
   constexpr vector2 operator*(float aScale) const {
-    return {mX * aScale, mY * aScale};
+    return {x * aScale, y * aScale};
   }
   constexpr vector2 operator/(float aScale) const {
-    return {mX / aScale, mY / aScale};
+    return {x / aScale, y / aScale};
   }
 
   constexpr vector2 &operator+=(const vector2 &aOther) {
-    mX += aOther.mX;
-    mY += aOther.mY;
+    x += aOther.x;
+    y += aOther.y;
     return *this;
   }
   constexpr vector2 &operator-=(const vector2 &aOther) {
-    mX -= aOther.mX;
-    mY -= aOther.mY;
+    x -= aOther.x;
+    y -= aOther.y;
     return *this;
   }
   constexpr vector2 &operator*=(float aScale) {
-    mX *= aScale;
-    mY *= aScale;
+    x *= aScale;
+    y *= aScale;
     return *this;
   }
   constexpr vector2 &operator/=(float aScale) {
-    mX /= aScale;
-    mY /= aScale;
+    x /= aScale;
+    y /= aScale;
     return *this;
   }
 
   constexpr bool operator==(const vector2 &aOther) const {
-    return mX == aOther.mX && mY == aOther.mY;
+    return x == aOther.x && y == aOther.y;
   }
   constexpr bool operator!=(const vector2 &aOther) const {
     return !(*this == aOther);
   }
 
-  constexpr float length_squared() const { return mX * mX + mY * mY; }
+  constexpr float length_squared() const { return x * x + y * y; }
   float length() const { return std::sqrt(length_squared()); }
   vector2 normalized() const {
     float mLength = length();
@@ -69,79 +69,79 @@ struct vector2 {
 };
 
 struct Transform {
-  vector2 mPosition{0.0f, 0.0f};
-  float mRotation = 0.0f;
-  vector2 mScale{1.0f, 1.0f};
+  vector2 position{0.0f, 0.0f};
+  float rotation = 0.0f;
+  vector2 scale{1.0f, 1.0f};
 };
 
 struct Velocity {
-  vector2 mSpeed{};
+  vector2 speed{};
 };
 
 struct MovementIntent {
-  vector2 mSpeed{0.0f, 0.0f};
+  vector2 speed{0.0f, 0.0f};
 };
 
 struct Time {
-  float mFixedDeltaTime = 0.016f; // 60 FPS
-  uint64_t mTickCount = 0;
+  float fixedDeltaTime = 0.016f; // 60 FPS
+  uint64_t tickCount = 0;
 };
 
 struct Active {
-  bool mEnabled = true;
+  bool enabled = true;
 };
 
 struct Lifetime {
-  float mRemainingTime = 0.0f;
+  float remainingTime = 0.0f;
 };
 
 struct GridPosition {
-  int mTileX = 0;
-  int mTileY = 0;
+  int tileX = 0;
+  int tileY = 0;
 };
 
 struct BoxCollider {
-  float mWidth = 1.0f;
-  float mHeight = 1.0f;
+  float width = 1.0f;
+  float height = 1.0f;
 };
 
 struct CircleCollider {
-  float mRadius = 1.0f;
+  float radius = 1.0f;
 };
 
 struct Collider {
-  int mLayer = 0;
-  int mMask = 0;
-  std::variant<BoxCollider, CircleCollider> mShape;
+  int layer = 0;
+  int mask = 0;
+  std::variant<BoxCollider, CircleCollider> shape;
 };
 
 struct Solid {
-  bool mIsSolid = true;
+  bool isSolid = true;
 };
 
 struct Trigger {
-  bool mIsTrigger = true;
+  bool isTrigger = true;
 };
 
 struct Renderable {
-  int mSpriteID = -1;
-  int mLayer = 0;
-  bool mIsVisible = true;
+  int spriteID = -1;
+  int layer = 0;
+  bool isVisible = true;
 };
 
 struct Animator {
-  int mCurrentAnimationID = -1;
-  float mFrameTime = 0.0f;
-  bool mIsPlaying = false;
-  bool mIsLooping = false;
+  int currentAnimationID = -1;
+  float frameTime = 0.0f;
+  bool isPlaying = false;
+  bool isLooping = false;
 };
 
 struct Name {
-  std::string mName{};
+  std::string name{};
 };
 
 struct DebugDraw {
-  bool IsEnabled = true;
+  bool isEnabled = true;
 };
 
 #endif // COMPONENTS_H

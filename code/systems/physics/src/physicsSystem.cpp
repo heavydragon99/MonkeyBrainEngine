@@ -12,6 +12,6 @@ bool PhysicsSystem::initialize() {
 void PhysicsSystem::update(Registry &aRegistry, float aDt) {
   aRegistry.forEach<Transform, Velocity>(
       [aDt](Transform &aTransform, Velocity &aVelocity) {
-        aTransform.mPosition += aVelocity.mSpeed * aDt;
+        aTransform.position += aVelocity.speed * aDt;
       });
 }
