@@ -26,6 +26,8 @@ public:
 private:
   void addSystem(std::unique_ptr<System> aSystem);
 
+  // TODO: make unique ptrs from registry and systems
+  // todo: make this class a singleton
   Registry mRegistry;
   std::vector<std::unique_ptr<System>> mSystems;
   GraphicsSystem *mGraphicsSystem = nullptr;
